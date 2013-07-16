@@ -33,6 +33,7 @@ template<typename T>
 class Rossler: public DynamicalSystem<T>
 {
 	private:
+		using DynamicalSystem<T>::dx;	// Allow to use "dx" instead of "this->dx" in f function.
 		T a, b, c;
 
 	public:
@@ -42,7 +43,7 @@ class Rossler: public DynamicalSystem<T>
 
 		inline void changeparameters(T a, T b, T c);
 
-		virtual SystemStates<T>& f(T t, SystemStates<T>& x);
+		virtual void f(T t, SystemStates<T>& x);
 };
 
 
@@ -81,15 +82,12 @@ inline void Rossler<T>::changeparameters(T a, T b, T c)
 
 
 template<typename T>
-SystemStates<T>& Rossler<T>::f(T t, SystemStates<T>& x)
+void Rossler<T>::f(T t, SystemStates<T>& x)
 {
-	SystemStates<T> *d = new SystemStates<T>(3);
-	
-	(*d)[0] = -x[1] - x[2];
-	(*d)[1] = x[0] + this->a * x[1];
-	(*d)[2] = this->b + x[2] * ( x[0] - this->c);
-
-	return (*d);
+	dx[0] = -x[1] - x[2];
+	dx[1] = x[0] + a * x[1];
+	dx[2] = b + x[2] * ( x[0] - c);
+	return;
 }
 
 

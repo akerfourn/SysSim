@@ -35,7 +35,7 @@ class Integrator
 	public:
 		virtual ~Integrator(void){};
 
-		virtual SystemStates<T>& operator()(T &t, DynamicalSystem<T> &system) = 0;
+		virtual void operator()(T &t, DynamicalSystem<T> &system) = 0;
 };
 
 
@@ -104,7 +104,6 @@ inline void FixedStepIntegrator<T>::setstep(FixedStepIntegrator<T> &other)
 	return;
 }
 
-
 /* 
  * Méthode Runge-Kutta 4 :
  *
@@ -115,73 +114,63 @@ inline void FixedStepIntegrator<T>::setstep(FixedStepIntegrator<T> &other)
 template<typename T>
 class RungeKutta4: public FixedStepIntegrator<T>
 {
+	protected:
+
+		SystemStates<T> k1,k2,k3,tmp;
+
 	public:
 		RungeKutta4(void):FixedStepIntegrator<T>(){};
 		RungeKutta4(T step):FixedStepIntegrator<T>(step){};
 		RungeKutta4(FixedStepIntegrator<T> &other):FixedStepIntegrator<T>(other){};
 
-		SystemStates<T>& operator()(T &t, DynamicalSystem<T> &system);
+		void operator()(T &t, DynamicalSystem<T> &system);
 };
 
 template<typename T>
-SystemStates<T>& RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
+void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 {
-	SystemStates<T> *k1 = NULL, *k2 = NULL, *k3 = NULL, *k4 = NULL;
-	SystemStates<T> *out = new SystemStates<T>(system);
-	SystemStates<T> tmp(system);
 	long i;
 
-	tmp.resize(system);
+	k1.resize(system.sizex());
+	k2.resize(system.sizex());
+	k3.resize(system.sizex());	
 
-	k1 = &system.f(t, system);
+	tmp.resize(system.sizex());
 
-	for (i = 0; i < system.sizey(); ++i)
-	{
-		(*out)(i) = (*k1)(i);
-		tmp(i) = system(i);
-	}
+	system.f(t, system);
 
 	for (i = 0; i < system.sizex(); ++i)
 	{
-		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * (*k1)[i];
+		k1[i] = system.getdx(i);
+		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k1[i];
 	}
 
-	k2 = &system.f(t + ( this->step / ((T)2.0) ), tmp);
+	system.f(t + ( this->step / ((T)2.0) ), tmp);
 
 	for (i = 0; i < system.sizex(); ++i)
 	{
-		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * (*k2)[i];
+		k2[i] = system.getdx(i);
+		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k2[i];
 	}
 
-	k3 = &system.f(t + ( this->step / ((T)2.0) ), tmp);
+	system.f(t + ( this->step / ((T)2.0) ), tmp);
 	
 	for (i = 0; i < system.sizex(); ++i)
 	{
-		tmp[i] = system[i] + this->step * (*k3)[i];
+		k3[i] = system.getdx(i);
+		tmp[i] = system[i] + this->step * k3[i];
 	}
 
-	k4 = &system.f(t + this->step, tmp);
+	system.f(t + this->step, tmp);
 
 	for (i = 0; i < system.sizex(); ++i)
 	{
-		(*out)[i] = system[i] + ( this->step / ((T)6.0) ) * ( (*k1)[i] + ((T)2.0) * (*k2)[i] + ((T)2.0) * (*k3)[i] + (*k4)[i] );
-		system[i] = (*out)[i];
+		system[i] = system[i] + ( this->step / ((T)6.0) ) * ( k1[i] + ((T)2.0) * k2[i] + ((T)2.0) * k3[i] + system.getdx(i) );
 	}
-
-	for (i = 0; i < system.sizey(); ++i)
-    {
-        (*out)(i) = (*k4)(i);
-        system(i) = (*out)(i);
-    }
-
-	delete k1;
-	delete k2;
-	delete k3;
-	delete k4;
 
 	t = t + this->step;
 
-	return (*out);
+	return;
 }
 
 

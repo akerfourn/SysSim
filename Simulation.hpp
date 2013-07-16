@@ -138,7 +138,6 @@ void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
 {
 	std::ostringstream oss;
 	std::string aff;
-	SystemStates<double> *trash = NULL;
 	T t = tisim;
 
 	oss.setf(std::ios::fixed, std::ios::floatfield);
@@ -146,8 +145,7 @@ void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
 
 	while (t < ti)
 	{
-		trash = & (*this->integrator)(t, *this->dynamicalsystem);
-		delete trash;
+		(*this->integrator)(t, *this->dynamicalsystem);
 	}
 
 	while (t <= tf)
@@ -160,8 +158,7 @@ void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
 		this->dynamicalsystem->toString(aff,3,7);
 		ostream << aff << std::endl;
 
-		trash = & (*this->integrator)(t, *this->dynamicalsystem);
-		delete trash;
+		(*this->integrator)(t, *this->dynamicalsystem);
 	}
 
 	return;
@@ -201,7 +198,6 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, un
 {
 	std::ostringstream oss;
 	std::string aff;
-	SystemStates<double> *trash = NULL;
 	T t = 0.0;
 	unsigned long i;
 
@@ -210,8 +206,7 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, un
 
 	for(i = 0; i < nbskipedpoints; ++i)
 	{
-		trash = & (*this->integrator)(t, *this->dynamicalsystem);
-		delete trash;
+		(*this->integrator)(t, *this->dynamicalsystem);
 	}
 
 	for(i = 0; i < nbpoints; ++i)
@@ -224,8 +219,7 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, un
 		this->dynamicalsystem->toString(aff,7,3);
 		ostream << aff << std::endl;
 
-		trash = & (*this->integrator)(t, *this->dynamicalsystem);
-		delete trash;
+		(*this->integrator)(t, *this->dynamicalsystem);
 	}
 
 	return;

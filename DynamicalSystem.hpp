@@ -53,23 +53,35 @@
 template<typename T>
 class DynamicalSystem: public SystemStates<T>
 {
+	protected:
+		std::vector<T> dx;
 
 	public:
 		DynamicalSystem(void):SystemStates<T>(){};
-		DynamicalSystem(const long nstates):SystemStates<T>(nstates){};
-		DynamicalSystem(const long nstates, const long noutput):SystemStates<T>(nstates,noutput){};
+		DynamicalSystem(const long nstates):SystemStates<T>(nstates)
+		{
+			dx.resize(nstates);
+		};
+		DynamicalSystem(const long nstates, const long noutput):SystemStates<T>(nstates,noutput)
+		{
+			dx.resize(nstates);
+		};
 		DynamicalSystem(SystemStates<T> &ref):SystemStates<T>(ref){};
 		virtual ~DynamicalSystem(void){};
 
 		/* La fonction "f" définie la dynamique du système en fonction du temps
 		 * "t" et d'un vecteur d'état "state".
 		 */
-		virtual SystemStates<T>& f(T t, SystemStates<T>& state) = 0;
-		virtual inline SystemStates<T>& f(T t);
+		virtual void f(T t, SystemStates<T>& state) = 0;
+		virtual inline void f(T t);
 
 		virtual inline void init(SystemStates<T> &xi);
 		virtual void init(T xi[]);
 		virtual void init(std::vector<T> &xi);
+
+		inline T &getdx(const long index);
+		inline T getdx(const long index) const;
+		inline void setdx(const long index, const T value);
 
 };
 
@@ -77,7 +89,7 @@ class DynamicalSystem: public SystemStates<T>
 
 
 template<typename T>
-inline SystemStates<T>& DynamicalSystem<T>::f(T t)
+inline void DynamicalSystem<T>::f(T t)
 {
 	return this->f(t,*this);
 }
@@ -100,6 +112,7 @@ void DynamicalSystem<T>::init(T xi[])
 	{
 		this->getx(i) = xi[i];
 	}
+	return;
 }
 
 template<typename T>
@@ -110,6 +123,26 @@ void DynamicalSystem<T>::init(std::vector<T> &xi)
 	{
 		this->getx(i) = xi[i];
 	}
+	return;
+}
+
+template<typename T>
+inline T &DynamicalSystem<T>::getdx(const long index)
+{
+	return this->dx[index];
+}
+
+template<typename T>
+inline T DynamicalSystem<T>::getdx(const long index) const
+{
+	return this->dx[index];
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::setdx(const long index, const T value)
+{
+	this->dx[index] = value;
+	return;
 }
 
 
