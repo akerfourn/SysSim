@@ -75,6 +75,9 @@ class DynamicalSystem: public SystemStates<T>
 		virtual void f(T t, SystemStates<T>& state) = 0;
 		virtual inline void f(T t);
 
+		virtual void h(T t, SystemStates<T>& state);
+		virtual inline void h(T t);
+
 		virtual inline void init(SystemStates<T> &xi);
 		virtual void init(T xi[]);
 		virtual void init(std::vector<T> &xi);
@@ -91,9 +94,24 @@ class DynamicalSystem: public SystemStates<T>
 template<typename T>
 inline void DynamicalSystem<T>::f(T t)
 {
-	return this->f(t,*this);
+	this->f(t,*this);
+	return;
 }
 
+
+
+template<typename T>
+void DynamicalSystem<T>::h(T t, SystemStates<T>& state)
+{
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::h(T t)
+{
+	this->h(t,*this);
+	return;
+}
 
 
 

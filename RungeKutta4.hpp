@@ -69,6 +69,8 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 
 	t = t + this->step;
 
+	system.h(t,system);	// Rafraichissement des sorties.
+
 	return;
 }
 
