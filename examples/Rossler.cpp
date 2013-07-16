@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 
-#include "Rossler.hpp"
-#include "../Integrators.hpp"
-#include "../Simulation.hpp"
+#include "examples/Rossler.hpp"
+#include "RungeKutta4.hpp"
+#include "Simulation.hpp"
 
 int main(void)
 {

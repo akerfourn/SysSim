@@ -27,7 +27,7 @@
  *
  */
 
-#include "../DynamicalSystem.hpp"
+#include "DynamicalSystem.hpp"
 
 template<typename T>
 class Rossler: public DynamicalSystem<T>
