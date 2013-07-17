@@ -3,13 +3,15 @@
 
 #include "examples/Rossler.hpp"
 #include "RungeKutta4.hpp"
+#include "Euler.hpp"
 #include "Simulation.hpp"
 
 int main(void)
 {
 	Rossler<double> ross(0.398,2.0,4.0);
-	RungeKutta4<double> rk4(1e-2);
-	Simulation<double> sim(ross,rk4);
+	RungeKutta4<double> integrator(1e-2);
+//	Euler<double> integrator(1e-2);
+	Simulation<double> sim(ross,integrator);
 
 	double ti = 0.0;
 	double tf = 200.0;
