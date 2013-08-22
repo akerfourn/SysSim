@@ -88,8 +88,8 @@ class SystemStates
 		inline void ssetx(const long index, const T value);
 		inline void ssety(const long index, const T value);
 
-		inline long sizex(void);
-		inline long sizey(void);
+		inline long sizex(void) const;
+		inline long sizey(void) const;
 
 		/*	TODO FIXME : Il faudrait peut être passer à une surcharge de << ...
 		 * "toString" ça fait un peu trop java !
@@ -130,14 +130,14 @@ SystemStates<T>::SystemStates(void)
 template<typename T>
 SystemStates<T>::SystemStates(const long nbstates)
 {
-	this->resize(nstates);
+	this->resize(nbstates);
 	return;
 }
 
 template<typename T>
 SystemStates<T>::SystemStates(const long nbstates, const long nboutput)
 {
-	this->resize(nstates, noutput);
+	this->resize(nbstates, nboutput);
 	return;
 }
 
@@ -158,19 +158,19 @@ inline void SystemStates<T>::resize(void)
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nbstates)
+inline void SystemStates<T>::resize(long nbstates)
 {
-	this->resize(nstates,0);
+	this->resize(nbstates,0);
 	return;
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nbstates, const long nboutput)
+inline void SystemStates<T>::resize(long nbstates, long nboutput)
 {
-	if ( (nstates >= 0) && (noutput >= 0) )
+	if ( (nbstates >= 0) && (nboutput >= 0) )
 	{
-		this->x.resize(nstates);
-		this->y.resize(noutput);
+		this->x.resize(nbstates);
+		this->y.resize(nboutput);
 	}
 	else
 		throw SystemStatesIndexError();
@@ -360,13 +360,13 @@ inline void SystemStates<T>::ssety(const long index, T value)
 /* size */
 
 template<typename T>
-inline long SystemStates<T>::sizex(void)
+inline long SystemStates<T>::sizex(void) const
 {
 	return (long)this->x.size();
 }
 
 template<typename T>
-inline long SystemStates<T>::sizey(void)
+inline long SystemStates<T>::sizey(void) const
 {
 	return (long)this->y.size();
 }
