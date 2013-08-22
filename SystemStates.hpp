@@ -3,40 +3,21 @@
 
 /*	SystemStates.hpp
  *
- *		Fournit une classe de manipulation de vecteurs d'état. Elle est composé
- * de deux vecteurs x et y. Le vecteur x correspond aux variables d'état du
- * système (c.a.d. les variables qui évoluent par l'action d'un intégrateur)
- * tandis que le vecteur y correspond aux sorties du système (c.a.d. les
- * variables qui n'évoluent pas par l'action d'un intégrateur).
+ *		Gives a class for state vectors manipulation. It consist of two vectors.
+ * The first one x correspond with the state variables of the system and the
+ * second one y correspond with the outputs of the system.
  *
- *		Il est tout à fait possible d'avoir un système sans variables de sortie
- * ou un système sans variables d'état.
+ *		You can have a system without output variables or a system without
+ * state variables.
  *
- *		SystemStates utilise un template afin d'être compatible avec tous les
- * type possibles : il est ainsi possible d'utiliser tous les types standards
- * (p.e. int, float, double, ...) de C++. Il est aussi possible d'utiliser des
- * types personnalisés à condition qu'ils surchargent les opérateurs
- * arithmétiques et d'affectation. Afin de pouvoir utiliser toString (qui
- * utilise un objet "std::ostringstream" pour faire la convertion de type) il 
- * est nécessaire de faire une surcharge de l'opérateur de flux << compatible
- * avec "std::ostringstream".
+ *		SystemStates uses template to be compatible with all C++ standard types
+ * (int, float, double, ...). You can also use your own types. In this case
+ * you type must overload arithmetics and assignment operators. But you must
+ * also overload the << with std::ostream object to allow you to write
+ * your results on a string or in an output file.
  *
  *	Adrien KERFOURN (2013)
  */
-
-
-/* TODO FIXME
- * 		Les assesseurs de SystemStates renvois une référence permettant la
- * modification. Il faudrait peut-être essayer d'avoir une seconde version
- * renvoyant une copie de l'élement ?
- * 		Problème : si T est une classe particulière, comment va fonctionner
- * la recopie ?
- *
- * 		Ici le constructeur par recopie ne fait qu'adapter les dimensions. Je ne
- * pense pas que ce soit le comportement attendu par défaut ! Il faut faire une
- * vrai copie ( this->copy(ref) ).
- */
-
 
 #include <vector>
 #include <exception>
@@ -59,36 +40,36 @@ class SystemStates
 {
 	protected:
 
-		std::vector<T> x;	// Variables d'état du système.
-		std::vector<T> y;	// Sorties du système.
+		std::vector<T> x;	// State variables of the system.
+		std::vector<T> y;	// Outputs of the system.
 
 	public:
 
 		SystemStates(void);
-		SystemStates(const long nstates);
-		SystemStates(const long nstates, const long noutput);
-		SystemStates(SystemStates<T> &ref);
+		SystemStates(const long nbstates);
+		SystemStates(const long nbstates, const long nboutput);
+		SystemStates(SystemStates<T> const &ref);
 		virtual ~SystemStates(void){};
 
 		virtual inline void resize(void);
-		virtual inline void resize(const long nstates);
-		virtual inline void resize(const long nstates, const long noutput);
-		virtual inline void resize(SystemStates<T> &fromstates);
+		virtual inline void resize(const long nbstates);
+		virtual inline void resize(const long nbstates, const long nboutput);
+		virtual inline void resize(SystemStates<T> const &fromstates);
 
-		virtual inline void copy(SystemStates<T> &fromstates);
+		virtual inline void copy(SystemStates<T> const &fromstates);
 
-		inline T &operator[](const long index);				// Équivalent à un getx(...).
-		inline T operator[](const long index) const;		// TODO ? comprendre cette construction
+		inline T &operator[](const long index);				// Equivalent to getx(...).
+		inline T operator[](const long index) const;		
 
-		inline T &operator()(const long index);				// Équivalent à un gety(...).
-		inline T operator()(const long index) const;		// TODO ? comprendre cette construction
+		inline T &operator()(const long index);				// Equivalent to gety(...).
+		inline T operator()(const long index) const;
 
-		inline bool operator==(SystemStates<T> const &other);	// TODO : Tester !
-		inline bool operator!=(SystemStates<T> const &other);	// TODO : Tester !
+		inline bool operator==(SystemStates<T> const &other);	// TODO : Test !
+		inline bool operator!=(SystemStates<T> const &other);	// TODO : Test !
 
 
-		/* Attention, il n'y a pas de vérification d'indice pour ces assesseurs
-		 * et mutateurs :
+		/* Warning, there is no check of the index for these getters en setters
+		 * functions :
 		 */
 		inline T &getx(const long index);
 		inline T getx(const long index) const;
@@ -97,9 +78,8 @@ class SystemStates
 		inline void setx(const long index, const T value);
 		inline void sety(const long index, const T value);
 
-		/* Par contre, ces assesseurs et mutateurs effectuent une vérification 
-		 * d'indice (renvoie une exception de type SystemStatesIndexError en cas
-		 * de problème) :
+		/* However, these ones check the index (and send an
+		 * SystemStatesIndexError exception if it's out of boundary) :
 		 */
 		inline T &sgetx(const long index);
 		inline T sgetx(const long index) const;
@@ -110,6 +90,10 @@ class SystemStates
 
 		inline long sizex(void);
 		inline long sizey(void);
+
+		/*	TODO FIXME : Il faudrait peut être passer à une surcharge de << ...
+		 * "toString" ça fait un peu trop java !
+		 */
 
 		/* toString ajoute à "string" une représentation de l'objet SystemStates
 		 * (ou dérivé). Les éléments sont ajoutés les uns à la suite des autres
@@ -144,21 +128,21 @@ SystemStates<T>::SystemStates(void)
 }
 
 template<typename T>
-SystemStates<T>::SystemStates(const long nstates)
+SystemStates<T>::SystemStates(const long nbstates)
 {
 	this->resize(nstates);
 	return;
 }
 
 template<typename T>
-SystemStates<T>::SystemStates(const long nstates, const long noutput)
+SystemStates<T>::SystemStates(const long nbstates, const long nboutput)
 {
 	this->resize(nstates, noutput);
 	return;
 }
 
 template<typename T>
-SystemStates<T>::SystemStates(SystemStates<T> &ref)
+SystemStates<T>::SystemStates(SystemStates<T> const &ref)
 {
 	this->copy(ref);
 	return;
@@ -174,14 +158,14 @@ inline void SystemStates<T>::resize(void)
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nstates)
+inline void SystemStates<T>::resize(const long nbstates)
 {
 	this->resize(nstates,0);
 	return;
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nstates, const long noutput)
+inline void SystemStates<T>::resize(const long nbstates, const long nboutput)
 {
 	if ( (nstates >= 0) && (noutput >= 0) )
 	{
@@ -195,7 +179,7 @@ inline void SystemStates<T>::resize(const long nstates, const long noutput)
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(SystemStates<T> &fromstates)
+inline void SystemStates<T>::resize(SystemStates<T> const &fromstates)
 {
 	this->resize(fromstates.sizex(), fromstates.sizey());
 	return;
@@ -203,10 +187,9 @@ inline void SystemStates<T>::resize(SystemStates<T> &fromstates)
 
 
 
-/* Copie */
 
 template<typename T>
-inline void SystemStates<T>::copy(SystemStates<T> &fromstates)
+inline void SystemStates<T>::copy(SystemStates<T> const &fromstates)
 {
 	long i;
 
@@ -227,7 +210,7 @@ inline void SystemStates<T>::copy(SystemStates<T> &fromstates)
 
 
 
-/* Surcharges d'opérateurs */
+/* Operators overload */
 
 template<typename T>
 inline T &SystemStates<T>::operator[](const long index)
@@ -259,13 +242,13 @@ inline bool SystemStates<T>::operator==(SystemStates<T> const &other)
 	long i;
 	if ( (this->sizex() != other.sizex) || (this->sizey() != other.sizey()) ) return false;
 
-	/* Vérification des x (un à un) : */
+	/* Checks each x (one by one) : */
 	for(i = 0; i < this->sizex(); ++i)
 	{
 		if (this->getx(i) != other.gety(i)) return false;
 	}
 
-	/* Vérification des y (un à un) : */
+	/* Checks each y (one by one) : */
 	for(i = 0; i < this->sizey(); ++i)
 	{
 		if (this->gety() != other.gety()) return false;
@@ -282,7 +265,7 @@ inline bool SystemStates<T>::operator!=(SystemStates<T> const &other)
 
 
 
-/* geteurs et seteur */
+/* getters and setters */
 
 template<typename T>
 inline T &SystemStates<T>::getx(const long index)
