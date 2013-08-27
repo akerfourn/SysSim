@@ -108,8 +108,8 @@ class SystemStates
 		 *	- int width : donne le nombre total de caractères utilisés pour
 		 *		écrire le nombre (6 par défaut).
 		 */
-		inline void toString(std::string &string);
-		inline void toString(std::string &string, int precision, int width, char separator);
+		virtual inline void toString(std::string &string);
+		virtual inline void toString(std::string &string, int precision, int width, char separator);
 		/* FIXME
 		inline std::string toString(std::string &string);
 		inline std::string toString(std::string &string, int precision, int width, char separator);
