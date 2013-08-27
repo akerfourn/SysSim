@@ -158,14 +158,14 @@ inline void SystemStates<T>::resize(void)
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nbstates)
+inline void SystemStates<T>::resize(long nbstates)
 {
 	this->resize(nbstates,0);
 	return;
 }
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nbstates, const long nboutput)
+inline void SystemStates<T>::resize(long nbstates, long nboutput)
 {
 	if ( (nbstates >= 0) && (nboutput >= 0) )
 	{

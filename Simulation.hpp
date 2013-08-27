@@ -27,12 +27,17 @@ class Simulation
 		DynamicalSystem<T> *dynamicalsystem;
 		Integrator<T> *integrator;
 
+		long WSmax, WScount;	// writingstep
+
 	public:
 		Simulation(void);
 		Simulation(DynamicalSystem<T> &dynamicalsystem);
 		Simulation(Integrator<T> &integrator);
 		Simulation(DynamicalSystem<T> &dynamicalsystem, Integrator<T> &integrator);
 		virtual ~Simulation(void){};
+
+		inline void writingstep(long ws);
+		inline void writingstep(void);
 
 		inline DynamicalSystem<T> &getdynamicalsystem();
 		inline Integrator<T> &getintegrator();
@@ -58,6 +63,7 @@ Simulation<T>::Simulation(void)
 {
 	this->unsetdynamicalsystem();
 	this->unsetintegrator();
+	this->writingstep((long)0);
 	return;
 }
 
@@ -66,6 +72,7 @@ Simulation<T>::Simulation(DynamicalSystem<T> &dynamicalsystem)
 {
 	this->setdynamicalsystem(dynamicalsystem);
 	this->unsetintegrator();
+	this->writingstep((long)0);
 	return;
 }
 
@@ -74,6 +81,7 @@ Simulation<T>::Simulation(Integrator<T> &integrator)
 {
 	this->unsetdynamicalsystem();
 	this->setintegrator(integrator);
+	this->writingstep((long)0);
 	return;
 }
 
@@ -82,9 +90,26 @@ Simulation<T>::Simulation(DynamicalSystem<T> &dynamicalsystem, Integrator<T> &in
 {
 	this->setdynamicalsystem(dynamicalsystem);
 	this->setintegrator(integrator);
+	this->writingstep((long)0);
 	return;
 }
 
+
+
+template<typename T>
+inline void Simulation<T>::writingstep(long ws)
+{
+	this->WSmax = ws;
+	this->WScount = 0;
+	return;
+}
+
+template<typename T>
+inline void Simulation<T>::writingstep(void)
+{
+	this->writingstep((long)0);
+	return;
+}
 
 
 
@@ -150,13 +175,20 @@ void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
 
 	while (t <= tf)
 	{
-		oss.precision(3);
-		oss.width(6);
-		oss << t;
-		aff = oss.str();
-		oss.str("");
-		this->dynamicalsystem->toString(aff,3,7);
-		ostream << aff << std::endl;
+		if (this->WScount <= 0)
+		{
+			oss.precision(3);
+			oss.width(6);
+			oss << t;
+			aff = oss.str();
+			oss.str("");
+			this->dynamicalsystem->toString(aff,3,7);
+			ostream << aff << std::endl;
+		}
+		this->WScount++;
+		if (this->WScount >= this->WSmax)
+			this->WScount = 0;
+
 
 		(*this->integrator)(t, *this->dynamicalsystem);
 	}
@@ -211,13 +243,19 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, un
 
 	for(i = 0; i < nbpoints; ++i)
 	{
-		oss.precision(3);
-		oss.width(6);
-		oss << t;
-		aff = oss.str();
-		oss.str("");
-		this->dynamicalsystem->toString(aff,7,3);
-		ostream << aff << std::endl;
+		if (this->WScount <= 0)
+		{
+			oss.precision(3);
+			oss.width(6);
+			oss << t;
+			aff = oss.str();
+			oss.str("");
+			this->dynamicalsystem->toString(aff,7,3);
+			ostream << aff << std::endl;
+		}
+		this->WScount++;
+		if (this->WScount >= this->WSmax)
+			this->WScount = 0;
 
 		(*this->integrator)(t, *this->dynamicalsystem);
 	}
