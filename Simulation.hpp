@@ -182,7 +182,7 @@ void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
 			oss << t;
 			aff = oss.str();
 			oss.str("");
-			this->dynamicalsystem->toString(aff,3,7);
+			this->dynamicalsystem->toString(aff);
 			ostream << aff << std::endl;
 		}
 		this->WScount++;
@@ -250,7 +250,7 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, un
 			oss << t;
 			aff = oss.str();
 			oss.str("");
-			this->dynamicalsystem->toString(aff,7,3);
+			this->dynamicalsystem->toString(aff);
 			ostream << aff << std::endl;
 		}
 		this->WScount++;
