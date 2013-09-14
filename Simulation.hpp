@@ -19,6 +19,7 @@
 
 #include "DynamicalSystem.hpp"
 #include "Integrators.hpp"
+#include "PrePostOp.hpp"
 
 template<typename T>
 class Simulation
@@ -27,7 +28,12 @@ class Simulation
 		DynamicalSystem<T> *dynamicalsystem;
 		Integrator<T> *integrator;
 
+		PrePostOp<T> *preop;
+		PrePostOp<T> *postop;
+
 		long WSmax, WScount;	// writingstep
+
+		inline void initprepostop(void);
 
 	public:
 		Simulation(void);
@@ -45,6 +51,13 @@ class Simulation
 		inline void setintegrator(Integrator<T> &integrator);
 		inline void unsetdynamicalsystem(void);
 		inline void unsetintegrator(void);
+
+		inline PrePostOp<T> &getpreop();
+		inline PrePostOp<T> &getpostop();
+		inline void setpreop(PrePostOp<T> &preop);
+		inline void setpostop(PrePostOp<T> &postop);
+		inline void unsetpreop(void);
+		inline void unsetpostop(void);
 
 		void run(std::ostream &ostream, T ti, T tf, T tisim);
 		inline void run(std::ostream &ostream, T ti, T tf, DynamicalSystem<T> &dynamicalsystem, T tisim);
@@ -64,6 +77,7 @@ Simulation<T>::Simulation(void)
 	this->unsetdynamicalsystem();
 	this->unsetintegrator();
 	this->writingstep((long)0);
+	this->initprepostop();
 	return;
 }
 
@@ -73,6 +87,7 @@ Simulation<T>::Simulation(DynamicalSystem<T> &dynamicalsystem)
 	this->setdynamicalsystem(dynamicalsystem);
 	this->unsetintegrator();
 	this->writingstep((long)0);
+	this->initprepostop();
 	return;
 }
 
@@ -82,6 +97,7 @@ Simulation<T>::Simulation(Integrator<T> &integrator)
 	this->unsetdynamicalsystem();
 	this->setintegrator(integrator);
 	this->writingstep((long)0);
+	this->initprepostop();
 	return;
 }
 
@@ -91,6 +107,7 @@ Simulation<T>::Simulation(DynamicalSystem<T> &dynamicalsystem, Integrator<T> &in
 	this->setdynamicalsystem(dynamicalsystem);
 	this->setintegrator(integrator);
 	this->writingstep((long)0);
+	this->initprepostop();
 	return;
 }
 
@@ -155,6 +172,74 @@ inline void Simulation<T>::unsetintegrator(void)
 }
 
 
+template<typename T>
+inline PrePostOp<T> &Simulation<T>::getpreop()
+{
+	return this->*preop;
+}
+
+template<typename T>
+inline PrePostOp<T> &Simulation<T>::getpostop()
+{
+	return this->*postop;
+}
+
+template<typename T>
+inline void Simulation<T>::setpreop(PrePostOp<T> &preop)
+{
+	if (this->preop != NULL)
+	{
+		delete this->preop;
+	}
+	this->preop = &preop;
+	return;
+}
+
+template<typename T>
+inline void Simulation<T>::setpostop(PrePostOp<T> &postop)
+{
+	if (this->postop != NULL)
+	{
+		delete this->postop;
+	}	
+	this->postop = &postop;
+	return;
+}
+
+template<typename T>
+inline void Simulation<T>::unsetpreop(void)
+{
+	if (this->preop != NULL)
+	{
+		delete this->preop;
+	}
+	this->preop = new NoOp<T>();
+	return;
+}
+
+template<typename T>
+inline void Simulation<T>::unsetpostop(void)
+{
+	if (this->postop != NULL)
+	{
+		delete this->postop;
+	}
+	this->postop = new NoOp<T>();
+	return;
+}
+
+
+template<typename T>
+inline void Simulation<T>::initprepostop(void)
+/* /!\ Attention : à n'utiliser que pour l'initialisation d'une simulation.
+ * Dans le cas contraire il existe un risque de fuite de mémoire car l'objet
+ * précédement pointé n'est pas supprimé.
+ */
+{
+	this->preop = new NoOp<T>();
+	this->postop = new NoOp<T>();
+}
+
 
 
 
@@ -189,8 +274,9 @@ void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
 		if (this->WScount >= this->WSmax)
 			this->WScount = 0;
 
-
+		(*this->preop)(*this->integrator, *this->dynamicalsystem);
 		(*this->integrator)(t, *this->dynamicalsystem);
+		(*this->postop)(*this->integrator, *this->dynamicalsystem);
 	}
 
 	return;
@@ -257,7 +343,9 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, un
 		if (this->WScount >= this->WSmax)
 			this->WScount = 0;
 
+		(*this->preop)(*this->integrator, *this->dynamicalsystem);
 		(*this->integrator)(t, *this->dynamicalsystem);
+		(*this->postop)(*this->integrator, *this->dynamicalsystem);
 	}
 
 	return;
