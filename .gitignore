@@ -14,3 +14,7 @@ tests/*
 *.lai
 *.la
 *.a
+
+# Compiled Examples
+examples/Rossler
+*.dat
