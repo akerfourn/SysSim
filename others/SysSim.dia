@@ -3488,7 +3488,7 @@ Associtation d'un vecteur d'état (et d'un vecteur de sortie) à une dynamique.#
         <dia:real val="7.4000000000000004"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#RuggeKutta4#</dia:string>
+        <dia:string>#RungeKutta4#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
