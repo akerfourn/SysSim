@@ -13,6 +13,8 @@
  *		Méthodes d'intégration disponibles :
  *			- Runge-Kutta 4
  *
+ *	Adrien KERFOURN
+ *
  * TODO FIXME Il est possible que le retour de référence soit inutile. À voir si
  * une classe générant des diagrammes de bifurcations peut le faire élégamment
  * sans ce retour.

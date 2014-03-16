@@ -7,6 +7,8 @@
  * des opérations exécutés juste avant l'appel de l'intégrateur ou exécutés
  * juste après l'appel de l'intégrateur).
  *
+ *	Adrien KERFOURN
+ *
  */
 
 #include "Integrators.hpp"

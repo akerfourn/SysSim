@@ -6,6 +6,8 @@
  *		Définit les paramètres de simulation et l'exécute. Le système ainsi que
  * l'intégrateur son des objets externes qui dérivent respectivement de
  * DynamicalSystem et Integrator.
+ *
+ * Adrien KERFOURN
  */
 
 /* TODO
