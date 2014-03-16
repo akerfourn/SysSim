@@ -35,7 +35,7 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 	k2.resize(system.sizex());
 	k3.resize(system.sizex());	
 
-	tmp.resize(system.sizex());
+	tmp.resize(system.sizex(), system.sizey());
 
 	system.f(t, system);
 
