@@ -3,6 +3,9 @@
 
 /* 
  * Intégrateur pour système discret x[n+1] = f(t,x[n]) (x = dx).
+ *
+ *	Adrien KERFOURN
+ *
  */
 
 #include "Integrators.hpp"

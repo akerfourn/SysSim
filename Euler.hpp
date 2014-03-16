@@ -6,6 +6,8 @@
  *
  *	Implémente la méthode d'écrite sur l'article : http://fr.wikipedia.org/wiki/M%C3%A9thodes_de_Runge-Kutta
  *
+ *	Adrien KERFOURN
+ *
  */
 
 #include "Integrators.hpp"
