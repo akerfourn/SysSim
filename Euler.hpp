@@ -37,7 +37,6 @@ void Euler<T>::operator()(T &t, DynamicalSystem<T> &system)
 
 	t = t + this->step;
 
-	system.h(t,system);
 }
 
 #endif

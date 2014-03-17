@@ -45,8 +45,6 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k1[i];
 	}
 
-	system.h(t + ( this->step / ((T)2.0) ), tmp);
-
 	system.f(t + ( this->step / ((T)2.0) ), tmp);
 
 	for (i = 0; i < system.sizex(); ++i)
@@ -54,8 +52,6 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 		k2[i] = system.getdx(i);
 		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k2[i];
 	}
-
-	system.h(t + ( this->step / ((T)2.0) ), tmp);
 
 	system.f(t + ( this->step / ((T)2.0) ), tmp);
 	
@@ -65,8 +61,6 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 		tmp[i] = system[i] + this->step * k3[i];
 	}
 
-	system.h(t + this->step, tmp);
-
 	system.f(t + this->step, tmp);
 
 	for (i = 0; i < system.sizex(); ++i)
@@ -75,8 +69,6 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 	}
 
 	t = t + this->step;
-
-	system.h(t,system);	// Rafraichissement des sorties.
 
 	return;
 }
