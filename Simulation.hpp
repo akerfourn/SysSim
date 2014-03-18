@@ -64,16 +64,12 @@ class Simulation
 		inline void unsetpreop(void);
 		inline void unsetpostop(void);
 
-		void run(std::ostream &ostream, T ti, T tf, T tisim);
-		inline void run(std::ostream &ostream, T ti, T tf, DynamicalSystem<T> &dynamicalsystem, T tisim);
-		inline void run(std::ostream &ostream, T ti, T tf, Integrator<T> &integrator, T tisim);
-		inline void run(std::ostream &ostream, T ti, T tf, DynamicalSystem<T> &dynamicalsystem, Integrator<T> &integrator, T tisim);
+		void run(std::ostream &ostream, T ti, T tf, PrePostOp<T> &preop, PrePostOp<T> &postop);
+		void run(std::ostream &ostream, T ti, T tf);
 	
+		void run(std::ostream &ostream, unsigned long nbpoints, unsigned long nbskipedpoints, PrePostOp<T> &preop, PrePostOp<T> &postop);
 		void run(std::ostream &ostream, unsigned long nbpoints, unsigned long nbskipedpoints);
-		inline void run(std::ostream &ostream, unsigned long nbpoints, DynamicalSystem<T> &dynamicalsystem, unsigned long nbskipedpoints);
-		inline void run(std::ostream &ostream, unsigned long nbpoitns, Integrator<T> &integrator, unsigned long nbskipedpoints);
-		inline void run(std::ostream &ostream, unsigned long nbpoints, DynamicalSystem<T> &dynamicalsystem, Integrator<T> &integrator, unsigned long nbskipedpoints);
-
+		
 		void run(std::ostream &ostream, SimulationPredicate<T> &transiant, SimulationPredicate<T> &nontransiant, PrePostOp<T> &preop, PrePostOp<T> &postop);
 
 };
@@ -251,137 +247,62 @@ inline void Simulation<T>::initprepostop(void)
 
 
 template<typename T>
-void Simulation<T>::run(std::ostream &ostream, T ti, T tf, T tisim = (T)0.0)
+void inline Simulation<T>::run(std::ostream &ostream, T ti, T tf, PrePostOp<T> &preop, PrePostOp<T> &postop)
 {
-	std::ostringstream oss;
-	std::string aff;
-	T t = tisim;
+	TimePredicate<T> *transiant = new TimePredicate<T>(this->time, ti);
+	TimePredicate<T> *nontransiant = new TimePredicate<T>(this->time, tf);
 
-	oss.setf(std::ios::fixed, std::ios::floatfield);
-	oss.setf(std::ios::left, std::ios::adjustfield);
+	this->run(ostream, *transiant, *nontransiant, preop, postop);
 
-	while (t < ti)
-	{
-		(*this->integrator)(t, *this->dynamicalsystem);
-	}
-
-	while (t <= tf)
-	{
-		if (this->WScount <= 0)
-		{
-			oss.precision(3);
-			oss.width(6);
-			oss << t;
-			aff = oss.str();
-			oss.str("");
-			this->dynamicalsystem->toString(aff);
-			ostream << aff << std::endl;
-		}
-		this->WScount++;
-		if (this->WScount >= this->WSmax)
-			this->WScount = 0;
-
-		(*this->preop)(*this->integrator, *this->dynamicalsystem);
-		(*this->integrator)(t, *this->dynamicalsystem);
-		(*this->postop)(*this->integrator, *this->dynamicalsystem);
-	}
+	delete transiant;
+	delete nontransiant;
 
 	return;
 }
 
 template<typename T>
-inline void Simulation<T>::run(std::ostream &ostream, T ti, T tf, DynamicalSystem<T> &dynamicalsystem, T tisim = (T)0.0)
+void inline Simulation<T>::run(std::ostream &ostream, T ti, T tf)
 {
-	this->setdynamicalsystem(dynamicalsystem);
-	this->run(ostream, ti, tf, tisim);
+	NoOp<T> *noop = new NoOp<T>();
+
+	this->run(ostream, ti, tf, *noop, *noop);
+
+	delete noop;
+
 	return;
 }
+
+
+
 
 template<typename T>
-inline void Simulation<T>::run(std::ostream &ostream, T ti, T tf, Integrator<T> &integrator, T tisim = (T)0.0)
+inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, unsigned long nbskipedpoints, PrePostOp<T> &preop, PrePostOp<T> &postop)
 {
-	this->setintegrator(integrator);
-	this->run(ostream, ti, tf, tisim);
+
+	IterativePredicate<T> *transiant = new IterativePredicate<T>(nbskipedpoints);
+	IterativePredicate<T> *nontransiant = new IterativePredicate<T>(nbpoints);
+
+	this->run(ostream, *transiant, *nontransiant, preop, postop);
+
+	delete transiant;
+	delete nontransiant;
+
 	return;
+
 }
-
-template<typename T>
-inline void Simulation<T>::run(std::ostream &ostream, T ti, T tf, DynamicalSystem<T> &dynamicalsystem, Integrator<T> &integrator, T tisim = (T)0.0)
-{
-	this->setdynamicalsystem(dynamicalsystem);
-	this->setintegrator(integrator);
-	this->run(ostream, ti, tf, tisim);
-	return;
-}
-
-
-
-
 
 template<typename T>
 inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, unsigned long nbskipedpoints = 0)
 {
-	std::ostringstream oss;
-	std::string aff;
-	T t = 0.0;
-	unsigned long i;
+	NoOp<T> *noop = new NoOp<T>();
 
-	oss.setf(std::ios::fixed, std::ios::floatfield);
-	oss.setf(std::ios::left, std::ios::adjustfield);
+	this->run(ostream, nbpoints, nbskipedpoints, *noop, *noop);
 
-	for(i = 0; i < nbskipedpoints; ++i)
-	{
-		(*this->integrator)(t, *this->dynamicalsystem);
-	}
-
-	for(i = 0; i < nbpoints; ++i)
-	{
-		if (this->WScount <= 0)
-		{
-			oss.precision(3);
-			oss.width(6);
-			oss << t;
-			aff = oss.str();
-			oss.str("");
-			this->dynamicalsystem->toString(aff);
-			ostream << aff << std::endl;
-		}
-		this->WScount++;
-		if (this->WScount >= this->WSmax)
-			this->WScount = 0;
-
-		(*this->preop)(*this->integrator, *this->dynamicalsystem);
-		(*this->integrator)(t, *this->dynamicalsystem);
-		(*this->postop)(*this->integrator, *this->dynamicalsystem);
-	}
+	delete noop;
 
 	return;
 }
 
-template<typename T>
-inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, DynamicalSystem<T> &dynamicalsystem, unsigned long nbskipedpoints = 0)
-{
-	this->setdynamicalsytem(dynamicalsystem);
-	this->run(ostream, nbpoints, nbskipedpoints);
-	return;
-}
-
-template<typename T>
-inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, Integrator<T> &integrator, unsigned long nbskipedpoints = 0)
-{
-	this->setintegrator(integrator);
-	this->run(ostream, nbpoints, nbskipedpoints);
-	return;
-}
-
-template<typename T>
-inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, DynamicalSystem<T> &dynamicalsystem, Integrator<T> &integrator, unsigned long nbskipedpoints = 0)
-{
-	this->setdynamicalsystem(dynamicalsystem);
-	this->setintegrator(integrator);
-	this->run(ostream, nbpoints, nbskipedpoints);
-	return;
-}
 
 template<typename T>
 void Simulation<T>::run(std::ostream &ostream, SimulationPredicate<T> &transiant, SimulationPredicate<T> &nontransiant, PrePostOp<T> &preop, PrePostOp<T> &postop)
@@ -393,12 +314,12 @@ void Simulation<T>::run(std::ostream &ostream, SimulationPredicate<T> &transiant
 	oss.setf(std::ios::fixed, std::ios::floatfield);
 	oss.setf(std::ios::left, std::ios::adjustfield);
 
-	while(transiant() == true)
+	while(transiant.test() == true)
 	{
 		(*this->integrator)(this->time, *this->dynamicalsystem);
 	}
 
-	while(nontransiant() == true)
+	while(nontransiant.test() == true)
 	{
 		if (this->WScount <= 0)
 		{

@@ -14,10 +14,10 @@ template<typename T>
 class SimulationPredicate
 {
 	public:
-		SimulationPredicate(void);
+		SimulationPredicate(void){};
 		virtual ~SimulationPredicate(void){};
 
-		virtual bool operator()(void)
+		virtual inline bool operator()(void)
 		{
 			return this->test();
 		}
