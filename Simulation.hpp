@@ -31,14 +31,10 @@ class Simulation
 		DynamicalSystem<T> *dynamicalsystem;
 		Integrator<T> *integrator;
 
-		PrePostOp<T> *preop;
-		PrePostOp<T> *postop;
-
 		T time;
 
 		long WSmax, WScount;	// writingstep
 
-		inline void initprepostop(void);
 
 	public:
 		Simulation(void);
@@ -50,19 +46,15 @@ class Simulation
 		inline void writingstep(long ws);
 		inline void writingstep(void);
 
+		inline T getTime(void);
+		inline T setTime(T time);
+
 		inline DynamicalSystem<T> &getdynamicalsystem();
 		inline Integrator<T> &getintegrator();
 		inline void setdynamicalsystem(DynamicalSystem<T> &dynamicalsystem);
 		inline void setintegrator(Integrator<T> &integrator);
 		inline void unsetdynamicalsystem(void);
 		inline void unsetintegrator(void);
-
-		inline PrePostOp<T> &getpreop();
-		inline PrePostOp<T> &getpostop();
-		inline void setpreop(PrePostOp<T> &preop);
-		inline void setpostop(PrePostOp<T> &postop);
-		inline void unsetpreop(void);
-		inline void unsetpostop(void);
 
 		void run(std::ostream &ostream, T ti, T tf, PrePostOp<T> &preop, PrePostOp<T> &postop);
 		void run(std::ostream &ostream, T ti, T tf);
@@ -80,7 +72,7 @@ Simulation<T>::Simulation(void)
 	this->unsetdynamicalsystem();
 	this->unsetintegrator();
 	this->writingstep((long)0);
-	this->initprepostop();
+	this->time = (T)0.0;
 	return;
 }
 
@@ -90,7 +82,7 @@ Simulation<T>::Simulation(DynamicalSystem<T> &dynamicalsystem)
 	this->setdynamicalsystem(dynamicalsystem);
 	this->unsetintegrator();
 	this->writingstep((long)0);
-	this->initprepostop();
+	this->time = (T)0.0;
 	return;
 }
 
@@ -100,7 +92,7 @@ Simulation<T>::Simulation(Integrator<T> &integrator)
 	this->unsetdynamicalsystem();
 	this->setintegrator(integrator);
 	this->writingstep((long)0);
-	this->initprepostop();
+	this->time = (T)0.0;
 	return;
 }
 
@@ -110,7 +102,7 @@ Simulation<T>::Simulation(DynamicalSystem<T> &dynamicalsystem, Integrator<T> &in
 	this->setdynamicalsystem(dynamicalsystem);
 	this->setintegrator(integrator);
 	this->writingstep((long)0);
-	this->initprepostop();
+	this->time = (T)0.0;
 	return;
 }
 
@@ -131,7 +123,18 @@ inline void Simulation<T>::writingstep(void)
 	return;
 }
 
+template<typename T>
+inline T Simulation<T>::getTime(void)
+{
+	return this->time;
+}
 
+template<typename T>
+inline T Simulation<T>::setTime(T time)
+{
+	this->time = time;
+	return;
+}
 
 
 template<typename T>
@@ -174,74 +177,6 @@ inline void Simulation<T>::unsetintegrator(void)
 	return;
 }
 
-
-template<typename T>
-inline PrePostOp<T> &Simulation<T>::getpreop()
-{
-	return this->*preop;
-}
-
-template<typename T>
-inline PrePostOp<T> &Simulation<T>::getpostop()
-{
-	return this->*postop;
-}
-
-template<typename T>
-inline void Simulation<T>::setpreop(PrePostOp<T> &preop)
-{
-	if (this->preop != NULL)
-	{
-		delete this->preop;
-	}
-	this->preop = &preop;
-	return;
-}
-
-template<typename T>
-inline void Simulation<T>::setpostop(PrePostOp<T> &postop)
-{
-	if (this->postop != NULL)
-	{
-		delete this->postop;
-	}	
-	this->postop = &postop;
-	return;
-}
-
-template<typename T>
-inline void Simulation<T>::unsetpreop(void)
-{
-	if (this->preop != NULL)
-	{
-		delete this->preop;
-	}
-	this->preop = new NoOp<T>();
-	return;
-}
-
-template<typename T>
-inline void Simulation<T>::unsetpostop(void)
-{
-	if (this->postop != NULL)
-	{
-		delete this->postop;
-	}
-	this->postop = new NoOp<T>();
-	return;
-}
-
-
-template<typename T>
-inline void Simulation<T>::initprepostop(void)
-/* /!\ Attention : à n'utiliser que pour l'initialisation d'une simulation.
- * Dans le cas contraire il existe un risque de fuite de mémoire car l'objet
- * précédement pointé n'est pas supprimé.
- */
-{
-	this->preop = new NoOp<T>();
-	this->postop = new NoOp<T>();
-}
 
 
 
@@ -308,6 +243,8 @@ template<typename T>
 void Simulation<T>::run(std::ostream &ostream, SimulationPredicate<T> &transiant, SimulationPredicate<T> &nontransiant, PrePostOp<T> &preop, PrePostOp<T> &postop)
 {
 	
+	// TODO raise an error if some élement are not defined (integrator and dynamicalsystem)
+		
 	std::ostringstream oss;
 	std::string aff;
 
