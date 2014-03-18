@@ -22,6 +22,7 @@
 #include "DynamicalSystem.hpp"
 #include "Integrators.hpp"
 #include "PrePostOp.hpp"
+#include "SimulationPredicate.hpp"
 
 template<typename T>
 class Simulation
@@ -32,6 +33,8 @@ class Simulation
 
 		PrePostOp<T> *preop;
 		PrePostOp<T> *postop;
+
+		T time;
 
 		long WSmax, WScount;	// writingstep
 
@@ -70,6 +73,8 @@ class Simulation
 		inline void run(std::ostream &ostream, unsigned long nbpoints, DynamicalSystem<T> &dynamicalsystem, unsigned long nbskipedpoints);
 		inline void run(std::ostream &ostream, unsigned long nbpoitns, Integrator<T> &integrator, unsigned long nbskipedpoints);
 		inline void run(std::ostream &ostream, unsigned long nbpoints, DynamicalSystem<T> &dynamicalsystem, Integrator<T> &integrator, unsigned long nbskipedpoints);
+
+		void run(std::ostream &ostream, SimulationPredicate<T> &transiant, SimulationPredicate<T> &nontransiant, PrePostOp<T> &preop, PrePostOp<T> &postop);
 
 };
 
@@ -378,7 +383,47 @@ inline void Simulation<T>::run(std::ostream &ostream, unsigned long nbpoints, Dy
 	return;
 }
 
+template<typename T>
+void Simulation<T>::run(std::ostream &ostream, SimulationPredicate<T> &transiant, SimulationPredicate<T> &nontransiant, PrePostOp<T> &preop, PrePostOp<T> &postop)
+{
+	
+	std::ostringstream oss;
+	std::string aff;
 
+	oss.setf(std::ios::fixed, std::ios::floatfield);
+	oss.setf(std::ios::left, std::ios::adjustfield);
+
+	while(transiant() == true)
+	{
+		(*this->integrator)(this->time, *this->dynamicalsystem);
+	}
+
+	while(nontransiant() == true)
+	{
+		if (this->WScount <= 0)
+		{
+			oss.precision(3);
+			oss.width(6);
+			oss << this->time;
+			aff = oss.str();
+			oss.str("");
+			this->dynamicalsystem->toString(aff);
+			ostream << aff << std::endl;
+		}
+		this->WScount++;
+		if (this->WScount >= this->WSmax)
+		{
+			this->WScount = 0;
+		}
+
+		preop(*this->integrator, *this->dynamicalsystem);		// Processing Pre-integration
+		(*this->integrator)(this->time, *this->dynamicalsystem);
+		postop(*this->integrator, *this->dynamicalsystem);		// Processing Post-integration
+	}
+
+	return;
+
+}
 
 
 

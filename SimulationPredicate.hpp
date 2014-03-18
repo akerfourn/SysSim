@@ -17,13 +17,18 @@ class SimulationPredicate
 		SimulationPredicate(void);
 		virtual ~SimulationPredicate(void){};
 
-		virtual bool operator()(void) = 0;
+		virtual bool operator()(void)
+		{
+			return this->test();
+		}
+
+		virtual bool test(void) = 0;
 };
 
 
 
 template<typename T>
-class IterativePredicate: public SimulationPredicate
+class IterativePredicate: public SimulationPredicate<T>
 {
 	protected:
 		unsigned long nbpoints;
@@ -34,7 +39,7 @@ class IterativePredicate: public SimulationPredicate
 		IterativePredicate(unsigned long nbpoints);
 		virtual ~IterativePredicate(void){};
 
-		virtual bool operator()(void);
+		virtual bool test(void);
 };
 
 template<typename T>
@@ -45,7 +50,7 @@ IterativePredicate<T>::IterativePredicate(unsigned long nbpoints)
 }
 
 template<typename T>
-inline bool operator()(void)
+inline bool IterativePredicate<T>::test(void)
 {
 	++(this->i);
 	return (this->i < this->nbpoints);
@@ -54,7 +59,7 @@ inline bool operator()(void)
 
 
 template<typename T>
-class TimePredicate<T>: public SimulationPredicate
+class TimePredicate: public SimulationPredicate<T>
 {
 	protected:
 		T *t;
@@ -65,7 +70,7 @@ class TimePredicate<T>: public SimulationPredicate
 		TimePredicate(T &t, T duration);
 		virtual ~TimePredicate(void){};
 
-		virtual bool operator()(void);
+		virtual bool test(void);
 		
 };
 
@@ -77,7 +82,7 @@ TimePredicate<T>::TimePredicate(T &t, T duration)
 }
 
 template<typename T>
-inline bool operator()(void)
+inline bool TimePredicate<T>::test(void)
 {
 	return (*this->t < this->duration);
 }
