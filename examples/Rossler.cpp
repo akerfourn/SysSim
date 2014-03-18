@@ -27,6 +27,7 @@ int main(void)
 	{
 		//sim.run(std::cout, ti, tf);
 		sim.run(datfile, npts);
+		//sim.run(datfile, ti, tf);
 		
 		datfile.close();
 	}
