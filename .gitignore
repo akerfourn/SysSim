@@ -16,5 +16,5 @@ tests/*
 *.a
 
 # Compiled Examples
-examples/Rossler
+examples/Rossler/Rossler
 *.dat

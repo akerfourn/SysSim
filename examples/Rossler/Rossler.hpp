@@ -61,12 +61,11 @@ template<typename T>
 Rossler<T>::Rossler(T a, T b, T c):DynamicalSystem<T>(3)
 {
 	this->changeparameters(a, b, c);
+	this->getx(0) = (T)0.0;
+	this->getx(1) = (T)0.0;
+	this->getx(2) = (T)0.0;
 	return;
 }
-
-
-
-
 
 template<typename T>
 inline void Rossler<T>::changeparameters(T a, T b, T c)
@@ -77,10 +76,6 @@ inline void Rossler<T>::changeparameters(T a, T b, T c)
 	return;
 }
 
-
-
-
-
 template<typename T>
 void Rossler<T>::f(T t, SystemStates<T>& x)
 {
@@ -89,9 +84,6 @@ void Rossler<T>::f(T t, SystemStates<T>& x)
 	dx[2] = b + x[2] * ( x[0] - c);
 	return;
 }
-
-
-
 
 #endif
 
