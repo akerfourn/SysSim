@@ -69,6 +69,8 @@ class DynamicalSystem: public SystemStates<T>
 		DynamicalSystem(SystemStates<T> &ref):SystemStates<T>(ref){};
 		virtual ~DynamicalSystem(void){};
 
+		virtual inline void resize(const long nbstates, const long nboutput);
+
 		/* La fonction "f" définie la dynamique du système en fonction du temps
 		 * "t" et d'un vecteur d'état "state".
 		 */
@@ -110,6 +112,18 @@ template<typename T>
 inline void DynamicalSystem<T>::h(T t)
 {
 	this->h(t,*this);
+	return;
+}
+
+
+
+
+template<typename T>
+inline void SystemStates<T>::resize(long nbstates, long nboutput)
+{
+	SystemStates<T>::resize(nbstates,nboutput);
+	this->dx.resize(nbstates);
+
 	return;
 }
 
