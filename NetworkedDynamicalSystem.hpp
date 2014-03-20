@@ -14,7 +14,7 @@
 #include "DynamicalSystem.hpp"
 
 template<typename T>
-class NetworkedDynamicalSystem: public DynamicalSystem
+class NetworkedDynamicalSystem: public DynamicalSystem<T>
 {
 	protected:
 		long nstatesbysystem;
