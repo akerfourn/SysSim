@@ -19,34 +19,49 @@ class NetworkedDynamicalSystem: public DynamicalSystem<T>
 	protected:
 		long nstatesbysystem;
 		long noutputbysystem;
-		long nsystem;
+		long nsystems;
 
 	public:
 		NetworkedDynamicalSystem(void):DynamicalSystem<T>()
 		{
 			this->nstatesbysystem = 0;
 			this->noutputbysystem = 0;
-			this->nsystem = 0;
+			this->nsystems = 0;
 		}
-		NetworkedDynamicalSystem(long nsystem, long nstatesbysystem, long noutputbyssystem = 0):DynamicalSystem<T>(nsystem*nstatesbysystem, nsystem*noutputbysystem)
+		NetworkedDynamicalSystem(long nsystems, long nstatesbysystem, long noutputbyssystem = 0):DynamicalSystem<T>(nsystems*nstatesbysystem, nsystems*noutputbysystem)
 		{
 			this->nstatesbysystem = nstatesbysystem;
 			this->noutputbysystem = noutputbysystem;
-			this->nsystem = nsystem;
+			this->nsystems = nsystems;
 		}
 		virtual ~NetworkedDynamicalSystem(){};
+
+		virtual inline void resize(long nsystems, long nstatesbysystem, long noutputbyssystem = 0);
 	
-		long getnsystem(void);
+		long getnsystems(void);
 		long getnstatesbysystem(void);
 		long getnoutputbysystem(void);
 
 		void localf(T t, SystemStates<T> &state) = 0;
 };
 
+
 template<typename T>
-void inline NetworkedDynamicalSystem<T>::getnsystem(void)
+void inline NetworkedDynamicalSystem<T>::resize(long nsystems, long nstatesbysystem, long noutputbyssystem = 0)
 {
-	return this->nsystem;
+	this->nstatesbysystem = nstatesbysystem;
+	this->noutputbysystem = noutputbysystem;
+	this->nsystems = nsystems;
+
+	this->resize(nsystems*nstatesbysystem, nsystems*noutputbysystem);
+}
+
+
+
+template<typename T>
+void inline NetworkedDynamicalSystem<T>::getnsystems(void)
+{
+	return this->nsystems;
 }
 
 template<typename T>
