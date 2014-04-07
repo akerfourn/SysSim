@@ -84,9 +84,9 @@ class DynamicalSystem: public SystemStates<T>
 		virtual void init(T xi[]);
 		virtual void init(std::vector<T> &xi);
 
-		inline T &getdx(const long index);
-		inline T getdx(const long index) const;
-		inline void setdx(const long index, const T value);
+		virtual inline T &getdx(const long index);
+		virtual inline T getdx(const long index) const;
+		virtual inline void setdx(const long index, const T value);
 
 };
 
