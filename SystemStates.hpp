@@ -71,12 +71,12 @@ class SystemStates
 		/* Warning, there is no check of the index for these getters en setters
 		 * functions :
 		 */
-		inline T &getx(const long index);
-		inline T getx(const long index) const;
-		inline T &gety(const long index);
-		inline T gety(const long index) const;
-		inline void setx(const long index, const T value);
-		inline void sety(const long index, const T value);
+		virtual inline T &getx(const long index);
+		virtual inline T getx(const long index) const;
+		virtual inline T &gety(const long index);
+		virtual inline T gety(const long index) const;
+		virtual inline void setx(const long index, const T value);
+		virtual inline void sety(const long index, const T value);
 
 		/* However, these ones check the index (and send an
 		 * SystemStatesIndexError exception if it's out of boundary) :
@@ -88,8 +88,8 @@ class SystemStates
 		inline void ssetx(const long index, const T value);
 		inline void ssety(const long index, const T value);
 
-		inline long sizex(void) const;
-		inline long sizey(void) const;
+		virtual inline long sizex(void) const;
+		virtual inline long sizey(void) const;
 
 		/*	TODO FIXME : Il faudrait peut être passer à une surcharge de << ...
 		 * "toString" ça fait un peu trop java !
