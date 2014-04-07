@@ -14,10 +14,10 @@
 
 
 template<typename T>
-class Network: public DynamicalSystem
+class Network: public DynamicalSystem<T>
 {
 	protected:
-		std::vector< DynamicalSystem<T> > systems;
+		std::vector< DynamicalSystem<T>* > systems;
 		long nstates;
 		long noutputs;
 
@@ -40,71 +40,71 @@ class Network: public DynamicalSystem
 
 		inline long sizex(void) const;
 		inline long sizey(void) const;
-}
+
+		virtual void f(T t, SystemStates<T>& x);
+};
 
 template<typename T>
 inline void Network<T>::add(DynamicalSystem<T>& system)
 {
-	this->systems.push_back(system);
+	this->systems.push_back(&system);
 	this->nstates += system.sizex();
 	this->noutputs += system.sizey();
+	return;
 }
 
 template<typename T>
 inline T& Network<T>::getx(long index)
 {
 	long idsystem = 0;
-	while(index >= this->systems[idsystem].sizex())
+	while(index >= this->systems[idsystem]->sizex())
 	{
 		++idsystem;
-		index = index - this->systems[idsystem].sizex();
+		index = index - this->systems[idsystem]->sizex();
 	}
-	return this->systems[idsystem].getx(index);	
+	return this->systems[idsystem]->getx(index);	
 }
 
 template<typename T>
 inline T& Network<T>::gety(long index)
 {
 	long idsystem = 0;
-	while(index >= this->systems[idsystem].sizey())
+	while(index >= this->systems[idsystem]->sizey())
 	{
 		++idsystem;
-		index = index - this->systems[idsystem].sizey();
+		index = index - this->systems[idsystem]->sizey();
 	}
-	return this->systems[idsystem].gety(index);	
+	return this->systems[idsystem]->gety(index);	
 }
 
 template<typename T>
 inline T& Network<T>::getdx(long index)
 {
 	long idsystem = 0;
-	while(index >= this->systems[idsystem].sizedx())
+	while(index >= this->systems[idsystem]->sizex())
 	{
 		++idsystem;
-		index = index - this->systems[idsystem].sizedx();
+		index = index - this->systems[idsystem]->sizex();
 	}
-	return this->systems[idsystem].getdx(index);	
+	return this->systems[idsystem]->getdx(index);	
 }
 
 template<typename T>
-inline T Network<T>::getx(long index)
+inline T Network<T>::getx(long index) const
 {
-	T& retval = this->getx(index);		// TODO Vérifier si nécessaire (je crains une récurcivité infinie sans ça)
-	return retval;
+	return this->Network<T>::getx(index);		// TODO Vérifier si nécessaire (je crains une récurcivité infinie sans ça)
 }
 
 template<typename T>
-inline T Network<T>::gety(long index)
+inline T Network<T>::gety(long index) const
 {
-	T& retval = this->gety(index);		// TODO Vérifier si nécessaire (je crains une récurcivité infinie sans ça)
-	return retval;
+	return this->gety(index);		// TODO Vérifier si nécessaire (je crains une récurcivité infinie sans ça)
 }
 
 template<typename T>
-inline T Network<T>::getdx(long index)
+inline T Network<T>::getdx(long index) const
 {
-	T& retval = this->getdx(index);		// TODO Vérifier si nécessaire (je crains une récurcivité infinie sans ça)
-	return retval;
+	return this->getdx(index);		// TODO Vérifier si nécessaire (je crains une récurcivité infinie sans ça)
 }
 
 template<typename T>
@@ -134,7 +134,7 @@ inline long Network<T>::sizex(void) const
 	long sizex = 0;
 	for(long i = 0; i < this->systems.size(); ++i)
 	{
-		sizex += this->systems[i].sizex();
+		sizex += this->systems[i]->sizex();
 	}
 	return sizex;
 }
@@ -145,9 +145,33 @@ inline long Network<T>::sizey(void) const
 	long sizey = 0;
 	for(long i = 0; i < this->systems.size(); ++i)
 	{
-		sizey += this->systems[i].sizey();
+		sizey += this->systems[i]->sizey();
 	}
 	return sizey;
+}
+
+template<typename T>
+void Network<T>::f(T t, SystemStates<T>& x)
+{
+	SystemStates<T> localx;
+	long idx = 0;
+	long idy = 0;
+	for(int i = 0; i < this->systems.size(); ++i)
+	{
+		localx.resize(*this->systems[i]);
+		for (long j = 0; j < this->systems[i]->sizex(); ++j)
+		{
+			localx.getx(j) = x.getx(idx);
+			idx++;
+		}
+		for (long j = 0; j < this->systems[i]->sizey(); ++j)
+		{
+			localx.gety(j) = x.gety(idy);
+			idy++;
+		}
+		this->systems[i]->f(t,localx);
+	}
+	return;
 }
 
 
