@@ -119,7 +119,7 @@ inline void DynamicalSystem<T>::h(T t)
 
 
 template<typename T>
-inline void SystemStates<T>::resize(long nbstates, long nboutput)
+inline void DynamicalSystem<T>::resize(long nbstates, long nboutput)
 {
 	SystemStates<T>::resize(nbstates,nboutput);
 	this->dx.resize(nbstates);
