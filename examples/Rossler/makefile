@@ -1,5 +1,5 @@
 CXX = g++
-OPTS = -I./..
+OPTS = -I./../..
 
 all:Rossler
 

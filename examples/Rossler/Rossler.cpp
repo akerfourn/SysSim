@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "examples/Rossler.hpp"
+#include "examples/Rossler/Rossler.hpp"
 #include "RungeKutta4.hpp"
 #include "Euler.hpp"
 #include "Simulation.hpp"
