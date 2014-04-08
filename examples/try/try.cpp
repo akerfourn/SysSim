@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "examples/Rossler/Rossler.hpp"
+#include "examples/try/LRossler.hpp"
 #include "RungeKutta4.hpp"
 #include "Euler.hpp"
 #include "Simulation.hpp"
@@ -9,9 +9,11 @@
 
 int main(void)
 {
-	Rossler<double> ross1(0.398,2.0,4.0);
-	Rossler<double> ross2(0.398,2.0,4.0);
-	Rossler<double> ross3(0.398,2.0,4.0);
+
+	LRossler<double> ross1(0.398,2.0,4.0);
+	LRossler<double> ross2(0.398,2.0,4.0);
+	LRossler<double> ross3(0.398,2.0,4.0);
+
 	RungeKutta4<double> integrator(1e-2);
 //	Euler<double> integrator(1e-2);
 	Network<double> network;
@@ -22,21 +24,18 @@ int main(void)
 	network.add(ross2);
 	network.add(ross3);
 
+
+	for(long i = 0; i < network.sizex(); ++i)
+	{
+		network[i] = (double)0.0;
+	}
+
 	double ti = 0.0;
 	double tf = 200.0;
 	long npts = 10000;
 
 	std::ofstream datfile("out.dat", std::ios::out | std::ios::trunc);
 
-	ross1[0] = 0.0;
-	ross1[1] = 0.0;
-	ross1[2] = 0.0;
-	ross2[0] = 0.0;
-	ross2[1] = 0.0;
-	ross2[2] = 0.0;
-	ross3[0] = 0.0;
-	ross3[1] = 0.0;
-	ross3[2] = 0.0;
 
 	if (datfile)
 	{
@@ -54,6 +53,7 @@ int main(void)
 		std::cerr << "Erreur à l'ouverture du fichier !" << std::endl;
 	}
 	
+
 	return 0;
 
 }
