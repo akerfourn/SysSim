@@ -31,7 +31,7 @@ class Connection
 		{
 			return this->getSystem();
 		};
-}
+};
 
 template<typename T>
 inline DynamicalSystem<T>& Connection<T>::getSystem(void)
