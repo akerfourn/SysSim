@@ -3,7 +3,7 @@ OPTS = -I./../..
 
 all:try
 
-try: try.cpp
+try: try.cpp LRossler.hpp RosslerConnection.hpp
 	$(CXX) -g -o try try.cpp $(OPTS)
 
 clean: 
