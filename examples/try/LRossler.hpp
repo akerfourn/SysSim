@@ -50,7 +50,12 @@ inline void LRossler<T>::changeparameters(T a, T b, T c)
 template<typename T>
 void LRossler<T>::localf(T t, SystemStates<T>& x, DynamicalSystem<T>& network, long basex, long basey)
 {
-	network.getdx(basex) = -x[basex+1] - x[basex+2];
+	T u = 0;
+	for (int i = 0; i < this->neighbors.size(); ++i)
+	{
+		u += this->get(i)();
+	}
+	network.getdx(basex) = -x[basex+1] - x[basex+2] + u;
 	network.getdx(basex+1) = x[basex+0] + a * x[basex+1];
 	network.getdx(basex+2) = b + x[basex+2] * ( x[basex+0] - c);
 }
