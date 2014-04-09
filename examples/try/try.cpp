@@ -46,11 +46,11 @@ int main(void)
 	network[4] = (double)0.67;
 	network[5] = (double)2.86;
 
-/*
+
 	network[6] = (double)0.02;
 	network[7] = (double)0.71;
 	network[8] = (double)0.89;
-*/
+
 	double ti = 0.0;
 	double tf = 200.0;
 	long npts = 10000;
