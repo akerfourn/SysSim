@@ -1,6 +1,12 @@
 #ifndef __ROSSLERCONNECTION_HPP__
 #define __ROSSLERCONNECTION_HPP__
 
+/* RosslerConnection
+ *
+ *	Adrien KERFOURN
+ *
+ */
+
 #include "Connection.hpp"
 
 template<typename T>

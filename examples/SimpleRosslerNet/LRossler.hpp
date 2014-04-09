@@ -1,6 +1,12 @@
 #ifndef __LROSSLER_HPP__
 #define __LROSSLER_HPP__
 
+/*	LRossler
+ *
+ * Adrien KERFOURN
+ *
+ */
+
 #include "LocalSystem.hpp"
 
 template<typename T>
