@@ -17,4 +17,6 @@ tests/*
 
 # Compiled Examples
 examples/Rossler/Rossler
+examples/try/try
+examples/SimpleRosslerNet/rnet
 *.dat
