@@ -10,34 +10,16 @@
  *	Adrien KERFOURN
  */
 
-#include "DynamicalSystem.hpp"
-
 template<typename T>
 class Connection
 {
-	protected:
-		DynamicalSystem<T>* system;
-
 	public:
 		Connection(void){};
-		Connection(DynamicalSystem<T> &system)
-		{
-			this->system = &system;
-		};
 		virtual ~Connection(void){};
 
-		DynamicalSystem<T>& getSystem(void);
-		inline DynamicalSystem<T>& operator()(void)
-		{
-			return this->getSystem();
-		};
+		virtual T operator()(void) = 0;
 };
 
-template<typename T>
-inline DynamicalSystem<T>& Connection<T>::getSystem(void)
-{
-	return this->*system;
-}
 
 
 #endif
