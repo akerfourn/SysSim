@@ -100,10 +100,16 @@ class DynamicalSystem: public SystemStates<T>
 			this->mdx.resize(nstates);
 			this->my.resize(noutput);
 		};
-		DynamicalSystem(SystemStates<T> &ref):SystemStates<T>(ref){};
+		DynamicalSystem(DynamicalSystem<T> &ref):SystemStates<T>(ref)
+		{
+			this->mdx.resize(ref.sizedx());
+			this->my.resize(ref.sizey());
+		};
 		virtual ~DynamicalSystem(void){};
 
 		inline void resize(const size_type nbstates, const size_type nboutput);
+
+		// TODO inline void copy(DynamicalSystem<T> &ref)
 
 		/* La fonction "f" définie la dynamique du système en fonction du temps
 		 * "t" et d'un vecteur d'état "state".
