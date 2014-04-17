@@ -49,76 +49,43 @@
  */
 
 #include <vector>
-#include <exception>
 
 #include <string>
 #include <sstream>
-
-class SystemStatesIndexError: public std::exception
-{
-	public:
-
-		virtual const char* what() const throw()
-		{
-			return "Indice en dehors des bornes.";
-		}
-};
 
 template<typename T>
 class SystemStates
 {
 	protected:
 
-		std::vector<T> x;	// State variables of the system.
-		std::vector<T> y;	// Outputs of the system.
+		std::vector<T> mx;
 
 	public:
 
 		SystemStates(void);
 		SystemStates(const long nbstates);
-		SystemStates(const long nbstates, const long nboutput);
 		SystemStates(const SystemStates<T> &ref);
 		virtual ~SystemStates(void){};
 
-		virtual inline void resize(void);
-		virtual inline void resize(const long nbstates);
-		virtual inline void resize(const long nbstates, const long nboutput);
-		virtual inline void resize(const SystemStates<T> &fromstates);
+		inline T &at(const long index);
+		inline T at(const long index) const;
 
-		virtual inline void copy(const SystemStates<T> &fromstates);
+		inline T &operator[](const long index);
+		inline T operator[](const long index) const;
 
-		inline T &operator[](const long index);				// Equivalent to getx(...).
-		inline T operator[](const long index) const;		
+		inline long size(void) const;
 
-		inline T &operator()(const long index);				// Equivalent to gety(...).
-		inline T operator()(const long index) const;
+		inline void resize(const long nbstates);
+		inline void resize(const SystemStates<T> &fromstates);
 
+		inline void copy(const SystemStates<T> &fromstates);
+	
+		// TODO inline SystemStates& operator=(SystemStates<T> const &other);
 		inline bool operator==(SystemStates<T> const &other);	// TODO : Test !
 		inline bool operator!=(SystemStates<T> const &other);	// TODO : Test !
 
 
-		/* Warning, there is no check of the index for these getters en setters
-		 * functions :
-		 */
-		virtual inline T &getx(const long index);
-		virtual inline T getx(const long index) const;
-		virtual inline T &gety(const long index);
-		virtual inline T gety(const long index) const;
-		virtual inline void setx(const long index, const T value);
-		virtual inline void sety(const long index, const T value);
-
-		/* However, these ones check the index (and send an
-		 * SystemStatesIndexError exception if it's out of boundary) :
-		 */
-		inline T &sgetx(const long index);
-		inline T sgetx(const long index) const;
-		inline T &sgety(const long index);
-		inline T sgety(const long index) const;
-		inline void ssetx(const long index, const T value);
-		inline void ssety(const long index, const T value);
-
-		virtual inline long sizex(void) const;
-		virtual inline long sizey(void) const;
+		
 
 		/*	TODO FIXME : Il faudrait peut être passer à une surcharge de << ...
 		 * "toString" ça fait un peu trop java !
@@ -152,7 +119,7 @@ class SystemStates
 template<typename T>
 SystemStates<T>::SystemStates(void)
 {
-	this->resize();
+//	this->resize(0);
 	return;
 }
 
@@ -164,13 +131,6 @@ SystemStates<T>::SystemStates(const long nbstates)
 }
 
 template<typename T>
-SystemStates<T>::SystemStates(const long nbstates, const long nboutput)
-{
-	this->resize(nbstates, nboutput);
-	return;
-}
-
-template<typename T>
 SystemStates<T>::SystemStates(const SystemStates<T> &ref)
 {
 	this->copy(ref);
@@ -178,39 +138,53 @@ SystemStates<T>::SystemStates(const SystemStates<T> &ref)
 }
 
 
+/* Access */
+
+template<typename T>
+inline T& SystemStates<T>::at(const long index)
+{
+	return this->mx.at(index);
+}
+
+template<typename T>
+inline T SystemStates<T>::at(const long index) const
+{
+	return this->mx.at(index);
+}
+
+template<typename T>
+inline T& SystemStates<T>::operator[](const long index)
+{
+	return this->mx.at(index);
+}
+
+template<typename T>
+inline T SystemStates<T>::operator[](const long index) const
+{
+	return this->mx.at(index);
+}
+
+
+
+template<typename T>
+inline long SystemStates<T>::size(void) const
+{
+	return this->mx.size();
+}
+
 /* Initialisations */
 
 template<typename T>
-inline void SystemStates<T>::resize(void)
+inline void SystemStates<T>::resize(const long nbstates)
 {
-	this->resize(0,0);
-}
-
-template<typename T>
-inline void SystemStates<T>::resize(long nbstates)
-{
-	this->resize(nbstates,0);
-	return;
-}
-
-template<typename T>
-inline void SystemStates<T>::resize(long nbstates, long nboutput)
-{
-	if ( (nbstates >= 0) && (nboutput >= 0) )
-	{
-		this->x.resize(nbstates);
-		this->y.resize(nboutput);
-	}
-	else
-		throw SystemStatesIndexError();
-
+	this->mx.resize(nbstates);
 	return;
 }
 
 template<typename T>
 inline void SystemStates<T>::resize(const SystemStates<T> &fromstates)
 {
-	this->resize(fromstates.sizex(), fromstates.sizey());
+	this->resize(fromstates.size());
 	return;
 }
 
@@ -222,16 +196,11 @@ inline void SystemStates<T>::copy(const SystemStates<T> &fromstates)
 {
 	long i;
 
-	this->resize(fromstates.sizex(),fromstates.sizey());
+	this->resize(fromstates.size());
 
-	for(i = 0; i < fromstates.sizex(); ++i)
+	for(i = 0; i < fromstates.size(); ++i)
 	{
-		this->getx(i) = fromstates[i];
-	}
-
-	for(i = 0; i < fromstates.sizey(); ++i)
-	{
-		this->gety(i) = fromstates(i);
+		this->at(i) = fromstates[i];
 	}
 
 	return;
@@ -242,45 +211,18 @@ inline void SystemStates<T>::copy(const SystemStates<T> &fromstates)
 /* Operators overload */
 
 template<typename T>
-inline T &SystemStates<T>::operator[](const long index)
-{
-	return this->getx(index);
-}
-
-template<typename T>
-inline T SystemStates<T>::operator[](const long index) const
-{
-	return this->getx(index);
-}
-
-template<typename T>
-inline T &SystemStates<T>::operator()(const long index)
-{
-	return this->gety(index);
-}
-
-template<typename T>
-inline T SystemStates<T>::operator()(const long index) const
-{
-	return this->gety(index);
-}
-
-template<typename T>
 inline bool SystemStates<T>::operator==(SystemStates<T> const &other)
 {
 	long i;
-	if ( (this->sizex() != other.sizex) || (this->sizey() != other.sizey()) ) return false;
-
-	/* Checks each x (one by one) : */
-	for(i = 0; i < this->sizex(); ++i)
+	if ( this->size() != other.size() )
 	{
-		if (this->getx(i) != other.gety(i)) return false;
+		return false;
 	}
 
-	/* Checks each y (one by one) : */
-	for(i = 0; i < this->sizey(); ++i)
+	/* Checks each x (one by one) : */
+	for(i = 0; i < this->size(); ++i)
 	{
-		if (this->gety() != other.gety()) return false;
+		if (this->at(i) != other.at(i) ) return false;
 	}
 
 	return true;
@@ -292,113 +234,6 @@ inline bool SystemStates<T>::operator!=(SystemStates<T> const &other)
 	return !(*this == other);
 }
 
-
-
-/* getters and setters */
-
-template<typename T>
-inline T &SystemStates<T>::getx(const long index)
-{
-	return this->x[index];
-}
-
-template<typename T>
-inline T SystemStates<T>::getx(const long index) const
-{
-	return this->x[index];
-}
-
-template<typename T>
-inline T &SystemStates<T>::gety(const long index)
-{
-	return this->y[index];
-}
-
-template<typename T>
-inline T SystemStates<T>::gety(const long index) const
-{
-	return this->y[index];
-}
-
-template<typename T>
-inline void SystemStates<T>::setx(const long index, T value)
-{
-	this->x[index] = value;
-	return;
-}
-
-template<typename T>
-inline void SystemStates<T>::sety(const long index, T value)
-{
-	this->y[index] = value;
-	return;
-}
-
-template<typename T>
-inline T &SystemStates<T>::sgetx(const long index)
-{
-	if ( (index >= 0) && (index < (long)this->x.size()) )
-		return this->x[index];
-	else
-		throw SystemStatesIndexError();
-}
-
-template<typename T>
-inline T SystemStates<T>::sgetx(const long index) const
-{
-	if ( (index >= 0) && (index < (long)this->x.size()) )
-		return this->x[index];
-	else
-		throw SystemStatesIndexError();
-}
-
-template<typename T>
-inline T &SystemStates<T>::sgety(const long index)
-{
-	if ( (index >= 0) && (index < (long)this->y.size()) )
-		return this->y[index];
-	else
-		throw SystemStatesIndexError();
-}
-
-template<typename T>
-inline T SystemStates<T>::sgety(const long index) const
-{
-	if ( (index >= 0) && (index < (long)this->y.size()) )
-		return this->y[index];
-	else
-		throw SystemStatesIndexError();
-}
-
-template<typename T>
-inline void SystemStates<T>::ssetx(const long index, T value)
-{
-	this->getx(index) = value;
-	return;
-}
-
-template<typename T>
-inline void SystemStates<T>::ssety(const long index, T value)
-{
-	this->gety(index) = value;
-	return;
-}
-
-
-
-/* size */
-
-template<typename T>
-inline long SystemStates<T>::sizex(void) const
-{
-	return (long)this->x.size();
-}
-
-template<typename T>
-inline long SystemStates<T>::sizey(void) const
-{
-	return (long)this->y.size();
-}
 
 
 /* Affichage */
@@ -431,51 +266,33 @@ inline void SystemStates<T>::toString(std::string &string, int precision, int wi
 	oss.setf(std::ios::fixed, std::ios::floatfield);
 	oss.setf(std::ios::left, std::ios::adjustfield);
 
-	if ( (this->sizex() <= 0) && (this->sizey() <= 0) )
+	if ( (this->size() <= 0) && (this->size() <= 0) )
+	{
 		return;
+	}
 
 	if (string.length() > 0)
+	{
 		string += separator;
+	}
 
-	if (this->sizex() > 0)
+	if (this->size() > 0)
 	{
 		oss.precision(precision);
 		oss.width(width);
-		oss << this->getx(0);
+		oss << this->at(0);
 		string += oss.str();
 		oss.str("");
 
-		for(i = 1; i < this->sizex(); ++i)
+		for(i = 1; i < this->size(); ++i)
 		{
 			oss.precision(precision);
 			oss.width(width);
-			oss << this->getx(i);
+			oss << this->at(i);
 			string += separator + oss.str();
 			oss.str("");
 		}
 	}
-
-	if (this->sizey() > 0)
-	{
-		if (this->sizex() > 0)
-			string += separator;
-		
-		oss.precision(precision);
-		oss.width(width);
-		oss << this->gety(0);
-		string += oss.str();
-		oss.str("");
-
-		for(i = 1; i < this->sizey(); ++i)
-		{
-			oss.precision(precision);
-			oss.width(width);
-			oss << this->gety(i);
-			string += separator + oss.str();
-			oss.str("");
-		}
-	}
-
 	
 }
 /* FIXME
