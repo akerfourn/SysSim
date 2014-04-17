@@ -90,12 +90,12 @@ class DynamicalSystem: public SystemStates<T>
 		DynamicalSystem(void):SystemStates<T>(){};
 		DynamicalSystem(const long nstates):SystemStates<T>(nstates)
 		{
-			this->dx.resize(nstates);
+			this->mdx.resize(nstates);
 		};
 		DynamicalSystem(const long nstates, const long noutput):SystemStates<T>(nstates)
 		{
-			this->dx.resize(nstates);
-			this->y.resize(noutput);
+			this->mdx.resize(nstates);
+			this->my.resize(noutput);
 		};
 		DynamicalSystem(SystemStates<T> &ref):SystemStates<T>(ref){};
 		virtual ~DynamicalSystem(void){};
@@ -131,6 +131,8 @@ class DynamicalSystem: public SystemStates<T>
 		inline T &x(const long index);
 		inline T x(const long index) const;
 
+		virtual inline long sizex(void) const;
+		virtual inline long sizedx(void) const;
 		virtual inline long sizey(void) const;
 
 };
@@ -166,8 +168,9 @@ inline void DynamicalSystem<T>::h(T t)
 template<typename T>
 inline void DynamicalSystem<T>::resize(long nbstates, long nboutput)
 {
-	SystemStates<T>::resize(nbstates,nboutput);
-	this->dx.resize(nbstates);
+	SystemStates<T>::resize(nbstates);
+	this->mdx.resize(nbstates);
+	this->my.resize(nboutput);
 
 	return;
 }
@@ -187,7 +190,7 @@ void DynamicalSystem<T>::init(T xi[])
 {
 	for(long i = 0; i < this->sizex(); ++i)
 	{
-		this->getx(i) = xi[i];
+		this->at(i) = xi[i];
 	}
 	return;
 }
@@ -198,7 +201,7 @@ void DynamicalSystem<T>::init(std::vector<T> &xi)
 {
 	for(long i = 0; i < this->sizex(); ++i)
 	{
-		this->getx(i) = xi[i];
+		this->at(i) = xi[i];
 	}
 	return;
 }
@@ -206,32 +209,32 @@ void DynamicalSystem<T>::init(std::vector<T> &xi)
 template<typename T>
 inline T &DynamicalSystem<T>::getdx(const long index)
 {
-	return this->dx[index];
+	return this->mdx[index];
 }
 
 template<typename T>
 inline T DynamicalSystem<T>::getdx(const long index) const
 {
-	return this->dx[index];
+	return this->mdx[index];
 }
 
 template<typename T>
 inline void DynamicalSystem<T>::setdx(const long index, const T value)
 {
-	this->dx[index] = value;
+	this->mdx[index] = value;
 	return;
 }
 
 template<typename T>
 inline T &DynamicalSystem<T>::gety(const long index)
 {
-	return this->y[index];
+	return this->my[index];
 }
 
 template<typename T>
 inline T DynamicalSystem<T>::gety(const long index) const
 {
-	return this->y[index];
+	return this->my[index];
 }
 
 
@@ -273,9 +276,21 @@ inline T DynamicalSystem<T>::x(const long index) const
 }
 
 template<typename T>
+inline long DynamicalSystem<T>::sizex(void) const
+{
+	return this->size();
+}
+
+template<typename T>
+inline long DynamicalSystem<T>::sizedx(void) const
+{
+	return (long)this->mdx.size();
+}
+
+template<typename T>
 inline long DynamicalSystem<T>::sizey(void) const
 {
-	return (long)this->y.size();
+	return (long)this->my.size();
 }
 
 #endif
