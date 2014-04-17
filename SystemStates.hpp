@@ -62,27 +62,29 @@ class SystemStates
 
 	public:
 
+		typedef typename std::vector<T>::size_type size_t;
+
 		SystemStates(void);
-		SystemStates(const long nbstates);
+		SystemStates(const size_t nbstates);
 		SystemStates(const SystemStates<T> &ref);
 		virtual ~SystemStates(void){};
 
-		inline T &at(const long index);
-		inline T at(const long index) const;
+		inline T &at(const size_t index);
+		inline T at(const size_t index) const;
 
-		inline T &operator[](const long index);
-		inline T operator[](const long index) const;
+		inline T &operator[](const size_t index);
+		inline T operator[](const size_t index) const;
 
 		inline long size(void) const;
 
-		inline void resize(const long nbstates);
+		inline void resize(const size_t nbstates);
 		inline void resize(const SystemStates<T> &fromstates);
 
 		inline void copy(const SystemStates<T> &fromstates);
 	
 		// TODO inline SystemStates& operator=(SystemStates<T> const &other);
-		inline bool operator==(SystemStates<T> const &other);	// TODO : Test !
-		inline bool operator!=(SystemStates<T> const &other);	// TODO : Test !
+		inline bool operator==(SystemStates<T> const &other) const;	// TODO : Test !
+		inline bool operator!=(SystemStates<T> const &other) const;	// TODO : Test !
 
 
 		
@@ -119,12 +121,11 @@ class SystemStates
 template<typename T>
 SystemStates<T>::SystemStates(void)
 {
-//	this->resize(0);
 	return;
 }
 
 template<typename T>
-SystemStates<T>::SystemStates(const long nbstates)
+SystemStates<T>::SystemStates(const size_t nbstates)
 {
 	this->resize(nbstates);
 	return;
@@ -141,25 +142,25 @@ SystemStates<T>::SystemStates(const SystemStates<T> &ref)
 /* Access */
 
 template<typename T>
-inline T& SystemStates<T>::at(const long index)
+inline T& SystemStates<T>::at(const size_t index)
 {
 	return this->mx.at(index);
 }
 
 template<typename T>
-inline T SystemStates<T>::at(const long index) const
+inline T SystemStates<T>::at(const size_t index) const
 {
 	return this->mx.at(index);
 }
 
 template<typename T>
-inline T& SystemStates<T>::operator[](const long index)
+inline T& SystemStates<T>::operator[](const size_t index)
 {
 	return this->mx.at(index);
 }
 
 template<typename T>
-inline T SystemStates<T>::operator[](const long index) const
+inline T SystemStates<T>::operator[](const size_t index) const
 {
 	return this->mx.at(index);
 }
@@ -175,7 +176,7 @@ inline long SystemStates<T>::size(void) const
 /* Initialisations */
 
 template<typename T>
-inline void SystemStates<T>::resize(const long nbstates)
+inline void SystemStates<T>::resize(const size_t nbstates)
 {
 	this->mx.resize(nbstates);
 	return;
@@ -194,11 +195,10 @@ inline void SystemStates<T>::resize(const SystemStates<T> &fromstates)
 template<typename T>
 inline void SystemStates<T>::copy(const SystemStates<T> &fromstates)
 {
-	long i;
 
 	this->resize(fromstates.size());
 
-	for(i = 0; i < fromstates.size(); ++i)
+	for(size_t i = 0; i < fromstates.size(); ++i)
 	{
 		this->at(i) = fromstates[i];
 	}
@@ -211,16 +211,15 @@ inline void SystemStates<T>::copy(const SystemStates<T> &fromstates)
 /* Operators overload */
 
 template<typename T>
-inline bool SystemStates<T>::operator==(SystemStates<T> const &other)
+inline bool SystemStates<T>::operator==(SystemStates<T> const &other) const
 {
-	long i;
 	if ( this->size() != other.size() )
 	{
 		return false;
 	}
 
 	/* Checks each x (one by one) : */
-	for(i = 0; i < this->size(); ++i)
+	for(size_t i = 0; i < this->size(); ++i)
 	{
 		if (this->at(i) != other.at(i) ) return false;
 	}
@@ -229,7 +228,7 @@ inline bool SystemStates<T>::operator==(SystemStates<T> const &other)
 }
 
 template<typename T>
-inline bool SystemStates<T>::operator!=(SystemStates<T> const &other)
+inline bool SystemStates<T>::operator!=(SystemStates<T> const &other) const
 {
 	return !(*this == other);
 }
@@ -261,7 +260,7 @@ inline void SystemStates<T>::toString(std::string &string, int precision, int wi
 {
 
 	std::ostringstream oss;
-	int i;
+	size_t i;
 
 	oss.setf(std::ios::fixed, std::ios::floatfield);
 	oss.setf(std::ios::left, std::ios::adjustfield);
