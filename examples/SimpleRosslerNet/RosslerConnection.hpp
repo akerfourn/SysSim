@@ -64,7 +64,7 @@ RosslerConnection<T>::RosslerConnection(Network<T>& network, long i, long j, T g
 template<typename T>
 T RosslerConnection<T>::operator()(void)
 {
-	return K*( this->network->getx(this->i) - this->network->getx(this->j) );
+	return K*( this->network->x(this->i) - this->network->x(this->j) );
 }
 
 #endif

@@ -87,9 +87,9 @@ void LRossler<T>::localf(T t, SystemStates<T>& x, DynamicalSystem<T>& network, l
 	{
 		u += this->get(i)();
 	}
-	network.getdx(basex) = -x[basex+1] - x[basex+2] + u;
-	network.getdx(basex+1) = x[basex+0] + a * x[basex+1];
-	network.getdx(basex+2) = b + x[basex+2] * ( x[basex+0] - c);
+	network.dx(basex) = -x[basex+1] - x[basex+2] + u;
+	network.dx(basex+1) = x[basex+0] + a * x[basex+1];
+	network.dx(basex+2) = b + x[basex+2] * ( x[basex+0] - c);
 }
 
 
