@@ -19,9 +19,9 @@ int main(void)
 
 	std::ofstream datfile("out.dat", std::ios::out | std::ios::trunc);
 
-	ross[0] = 0.0;
-	ross[1] = 0.0;
-	ross[2] = 0.0;
+	ross.x(0) = 0.0;
+	ross.x(1) = 0.0;
+	ross.x(2) = 0.0;
 
 	if (datfile)
 	{
