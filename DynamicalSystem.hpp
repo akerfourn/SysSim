@@ -128,6 +128,8 @@ class DynamicalSystem: public SystemStates<T>
 		inline T &dx(const long index);
 		inline T dx(const long index) const;
 
+		virtual inline long sizey(void) const;
+
 };
 
 
@@ -253,6 +255,12 @@ template<typename T>
 inline T dx(const long index) const
 {
 	return this->mdx[index];
+}
+
+template<typename T>
+inline long SystemStates<T>::sizey(void) const
+{
+	return (long)this->y.size();
 }
 
 #endif
