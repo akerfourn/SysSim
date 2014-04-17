@@ -108,8 +108,9 @@ class DynamicalSystem: public SystemStates<T>
 		virtual ~DynamicalSystem(void){};
 
 		inline void resize(const size_type nbstates, const size_type nboutput);
+		inline void resize(const DynamicalSystem<T> &ref);
 
-		// TODO inline void copy(DynamicalSystem<T> &ref)
+		inline void copy(const DynamicalSystem<T> &ref)
 
 		/* La fonction "f" définie la dynamique du système en fonction du temps
 		 * "t" et d'un vecteur d'état "state".
@@ -177,6 +178,33 @@ inline void DynamicalSystem<T>::resize(const size_type nbstates, const size_type
 	return;
 }
 
+template<typename T>
+inline void DynamicalSystem<T>::resize(const DynamicalSystem<T> &ref)
+{
+	SystemState<T>::resize(ref.sizex());
+	this->mdx.resize(ref.sizedx());
+	this->my.resize(ref.sizey());
+	return;
+}
+
+
+
+template<typename T>
+inline void DynamicalSystem<T>::copy(const DynamicalSystem<T> &ref)
+{
+	SystemState<T>::copy(ref);
+
+	for(size_type i; i < ref.sizedx(); ++i)
+	{
+		this->dx(i) = ref.dx(i);
+	}
+
+	for(size_type i; i < ref.sizey(); ++i)
+	{
+		this->y(i) = ref.y(i);
+	}
+	return;
+}
 
 
 
