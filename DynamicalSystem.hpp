@@ -128,6 +128,9 @@ class DynamicalSystem: public SystemStates<T>
 		inline T &dx(const long index);
 		inline T dx(const long index) const;
 
+		inline T &x(const long index);
+		inline T x(const long index) const;
+
 		virtual inline long sizey(void) const;
 
 };
@@ -234,31 +237,43 @@ inline T DynamicalSystem<T>::gety(const long index) const
 
 
 template<typename T>
-inline T &y(const long index)
+inline T& DynamicalSystem<T>::y(const long index)
 {
 	return this->my[index];
 }
 
 template<typename T>
-inline T y(const long index) const
+inline T DynamicalSystem<T>::y(const long index) const
 {
 	return this->my[index];
 }
 
 template<typename T>
-inline T &dx(const long index)
+inline T& DynamicalSystem<T>::dx(const long index)
 {
 	return this->mdx[index];
 }
 
 template<typename T>
-inline T dx(const long index) const
+inline T DynamicalSystem<T>::dx(const long index) const
 {
 	return this->mdx[index];
 }
 
 template<typename T>
-inline long SystemStates<T>::sizey(void) const
+inline T& DynamicalSystem<T>::x(const long index)
+{
+	return this->at(index);
+}
+
+template<typename T>
+inline T DynamicalSystem<T>::x(const long index) const
+{
+	return this->at(index);
+}
+
+template<typename T>
+inline long DynamicalSystem<T>::sizey(void) const
 {
 	return (long)this->y.size();
 }
