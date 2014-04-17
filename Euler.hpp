@@ -61,9 +61,9 @@ void Euler<T>::operator()(T &t, DynamicalSystem<T> &system)
 
 	system.f(t,system);
 
-	for(i = 0; i < system.sizex(); ++i)
+	for(i = 0; i < system.size(); ++i)
 	{
-		system[i] = system[i] + (this->step) * system.getdx(i);
+		system[i] = system[i] + (this->step) * system.dx(i);
 	}
 
 	t = t + this->step;

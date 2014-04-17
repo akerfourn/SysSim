@@ -61,41 +61,41 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 {
 	long i;
 
-	k1.resize(system.sizex());
-	k2.resize(system.sizex());
-	k3.resize(system.sizex());	
+	k1.resize(system.size());
+	k2.resize(system.size());
+	k3.resize(system.size());	
 
-	tmp.resize(system.sizex(), system.sizey());
+	tmp.resize(system.size());
 
 	system.f(t, system);
 
-	for (i = 0; i < system.sizex(); ++i)
+	for (i = 0; i < system.size(); ++i)
 	{
-		k1[i] = system.getdx(i);
+		k1[i] = system.dx(i);
 		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k1[i];
 	}
 
 	system.f(t + ( this->step / ((T)2.0) ), tmp);
 
-	for (i = 0; i < system.sizex(); ++i)
+	for (i = 0; i < system.size(); ++i)
 	{
-		k2[i] = system.getdx(i);
+		k2[i] = system.dx(i);
 		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k2[i];
 	}
 
 	system.f(t + ( this->step / ((T)2.0) ), tmp);
 	
-	for (i = 0; i < system.sizex(); ++i)
+	for (i = 0; i < system.size(); ++i)
 	{
-		k3[i] = system.getdx(i);
+		k3[i] = system.dx(i);
 		tmp[i] = system[i] + this->step * k3[i];
 	}
 
 	system.f(t + this->step, tmp);
 
-	for (i = 0; i < system.sizex(); ++i)
+	for (i = 0; i < system.size(); ++i)
 	{
-		system[i] = system[i] + ( this->step / ((T)6.0) ) * ( k1[i] + ((T)2.0) * k2[i] + ((T)2.0) * k3[i] + system.getdx(i) );
+		system[i] = system[i] + ( this->step / ((T)6.0) ) * ( k1[i] + ((T)2.0) * k2[i] + ((T)2.0) * k3[i] + system.dx(i) );
 	}
 
 	t = t + this->step;
