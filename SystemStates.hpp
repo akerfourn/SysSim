@@ -62,22 +62,22 @@ class SystemStates
 
 	public:
 
-		typedef typename std::vector<T>::size_type size_t;
+		typedef typename std::vector<T>::size_type size_type;
 
 		SystemStates(void);
-		SystemStates(const size_t nbstates);
+		SystemStates(const size_type nbstates);
 		SystemStates(const SystemStates<T> &ref);
 		virtual ~SystemStates(void){};
 
-		inline T &at(const size_t index);
-		inline T at(const size_t index) const;
+		inline T &at(const size_type index);
+		inline T at(const size_type index) const;
 
-		inline T &operator[](const size_t index);
-		inline T operator[](const size_t index) const;
+		inline T &operator[](const size_type index);
+		inline T operator[](const size_type index) const;
 
 		inline long size(void) const;
 
-		inline void resize(const size_t nbstates);
+		inline void resize(const size_type nbstates);
 		inline void resize(const SystemStates<T> &fromstates);
 
 		inline void copy(const SystemStates<T> &fromstates);
@@ -125,7 +125,7 @@ SystemStates<T>::SystemStates(void)
 }
 
 template<typename T>
-SystemStates<T>::SystemStates(const size_t nbstates)
+SystemStates<T>::SystemStates(const size_type nbstates)
 {
 	this->resize(nbstates);
 	return;
@@ -142,25 +142,25 @@ SystemStates<T>::SystemStates(const SystemStates<T> &ref)
 /* Access */
 
 template<typename T>
-inline T& SystemStates<T>::at(const size_t index)
+inline T& SystemStates<T>::at(const size_type index)
 {
 	return this->mx.at(index);
 }
 
 template<typename T>
-inline T SystemStates<T>::at(const size_t index) const
+inline T SystemStates<T>::at(const size_type index) const
 {
 	return this->mx.at(index);
 }
 
 template<typename T>
-inline T& SystemStates<T>::operator[](const size_t index)
+inline T& SystemStates<T>::operator[](const size_type index)
 {
 	return this->mx.at(index);
 }
 
 template<typename T>
-inline T SystemStates<T>::operator[](const size_t index) const
+inline T SystemStates<T>::operator[](const size_type index) const
 {
 	return this->mx.at(index);
 }
@@ -176,7 +176,7 @@ inline long SystemStates<T>::size(void) const
 /* Initialisations */
 
 template<typename T>
-inline void SystemStates<T>::resize(const size_t nbstates)
+inline void SystemStates<T>::resize(const size_type nbstates)
 {
 	this->mx.resize(nbstates);
 	return;
@@ -198,7 +198,7 @@ inline void SystemStates<T>::copy(const SystemStates<T> &fromstates)
 
 	this->resize(fromstates.size());
 
-	for(size_t i = 0; i < fromstates.size(); ++i)
+	for(size_type i = 0; i < fromstates.size(); ++i)
 	{
 		this->at(i) = fromstates[i];
 	}
@@ -219,7 +219,7 @@ inline bool SystemStates<T>::operator==(SystemStates<T> const &other) const
 	}
 
 	/* Checks each x (one by one) : */
-	for(size_t i = 0; i < this->size(); ++i)
+	for(size_type i = 0; i < this->size(); ++i)
 	{
 		if (this->at(i) != other.at(i) ) return false;
 	}
@@ -260,7 +260,7 @@ inline void SystemStates<T>::toString(std::string &string, int precision, int wi
 {
 
 	std::ostringstream oss;
-	size_t i;
+	size_type i;
 
 	oss.setf(std::ios::fixed, std::ios::floatfield);
 	oss.setf(std::ios::left, std::ios::adjustfield);
