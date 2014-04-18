@@ -110,7 +110,7 @@ class DynamicalSystem: public SystemStates<T>
 		inline void resize(const size_type nbstates, const size_type nboutput);
 		inline void resize(const DynamicalSystem<T> &ref);
 
-		inline void copy(const DynamicalSystem<T> &ref)
+		inline void copy(const DynamicalSystem<T> &ref);
 
 		/* La fonction "f" définie la dynamique du système en fonction du temps
 		 * "t" et d'un vecteur d'état "state".
@@ -121,7 +121,7 @@ class DynamicalSystem: public SystemStates<T>
 		virtual void h(T t, SystemStates<T>& state);
 		virtual inline void h(T t);
 
-		virtual inline void init(const SystemStates<T> &xi);
+		virtual inline void init(const DynamicalSystem<T> &xi);
 		virtual void init(const T xi[]);
 		virtual void init(const std::vector<T> &xi);
 
@@ -181,7 +181,7 @@ inline void DynamicalSystem<T>::resize(const size_type nbstates, const size_type
 template<typename T>
 inline void DynamicalSystem<T>::resize(const DynamicalSystem<T> &ref)
 {
-	SystemState<T>::resize(ref.sizex());
+	SystemStates<T>::resize(ref.sizex());
 	this->mdx.resize(ref.sizedx());
 	this->my.resize(ref.sizey());
 	return;
@@ -192,7 +192,7 @@ inline void DynamicalSystem<T>::resize(const DynamicalSystem<T> &ref)
 template<typename T>
 inline void DynamicalSystem<T>::copy(const DynamicalSystem<T> &ref)
 {
-	SystemState<T>::copy(ref);
+	SystemStates<T>::copy(ref);
 
 	for(size_type i; i < ref.sizedx(); ++i)
 	{
@@ -209,7 +209,7 @@ inline void DynamicalSystem<T>::copy(const DynamicalSystem<T> &ref)
 
 
 template<typename T>
-inline void DynamicalSystem<T>::init(const SystemStates<T> &xi)
+inline void DynamicalSystem<T>::init(const DynamicalSystem<T> &xi)
 {
 	this->copy(xi);
 	return;
