@@ -16,15 +16,19 @@ class LRossler: public LocalSystem<T>
 		T a, b, c;
 
 	public:
+		using LocalSystem<T>::dx;
+		using LocalSystem<T>::x;
+		using typename LocalSystem<T>::size_type;
+
 		LRossler(void);
 		LRossler(T a, T b, T c);
 
 		inline void changeparameters(T a, T b, T c);
 
-		virtual void localf(T t, SystemStates<T>& x, DynamicalSystem<T>& network, long basex, long basey);
+		virtual void localf(T t);
 
-		virtual long sizex(void){return (long)3;};
-		virtual long sizey(void){return (long)0;};
+		virtual size_type sizex(void){return (size_type)3;};
+		virtual size_type sizey(void){return (size_type)0;};
 
 };
 
@@ -54,16 +58,18 @@ inline void LRossler<T>::changeparameters(T a, T b, T c)
 
 
 template<typename T>
-void LRossler<T>::localf(T t, SystemStates<T>& x, DynamicalSystem<T>& network, long basex, long basey)
+void LRossler<T>::localf(T t)
 {
+
 	T u = 0;
-	for (int i = 0; i < this->neighbors.size(); ++i)
+	for (int i = 0; i < this->sizen(); ++i)
 	{
 		u += this->get(i)();
 	}
-	network.dx(basex) = -x[basex+1] - x[basex+2] + u;
-	network.dx(basex+1) = x[basex+0] + a * x[basex+1];
-	network.dx(basex+2) = b + x[basex+2] * ( x[basex+0] - c);
+
+	dx(0) = -x(1) - x(2) + u;
+	dx(1) = x(0) + a * x(1);
+	dx(2) = b + x(2) * ( x(0) - c);
 }
 
 
