@@ -39,6 +39,7 @@
  */
 
 #include <vector>
+#include <stdexcept>
 
 #include "SystemStates.hpp"
 #include "DynamicalSystem.hpp"
@@ -47,31 +48,161 @@
 template<typename T>
 class LocalSystem
 {
+	public: typedef typename std::vector<T>::size_type size_type;
+
 	protected:
+
 		std::vector< Connection<T>* > neighbors;
 
-		Connection<T>& get(long i);
+		SystemStates<T> *currentx;
+
+		DynamicalSystem<T> *network;
+		size_type basex;
+		size_type basey;
+
+		Connection<T>& get(const size_type i);
 
 	public:
+
 		LocalSystem(void);
+		LocalSystem(DynamicalSystem<T>& network, const size_type basex, const size_type basey);
 		virtual ~LocalSystem(void){};
+
+		inline void init(DynamicalSystem<T>& network, const size_type basex, const size_type basey);
+		inline void init();
+
+		inline void rebase(const size_type basex, const size_type basey);
 
 		void add(Connection<T>& connection);
 
-		virtual void localf(T t, SystemStates<T>& x, DynamicalSystem<T>& network, long basex, long basey) = 0;
 
-		virtual long sizex(void) = 0;
-		virtual long sizey(void) = 0;
+		inline T &x(const size_type index);
+		inline T x(const size_type index) const;
+
+		inline T &dx(const size_type index);
+		inline T dx(const size_type index) const;
+
+		inline T &y(const size_type index);
+		inline T y(const size_type index) const; 
+
+		virtual void localf(T t) = 0;
+
+		inline size_type sizen(void) const;
+
+		virtual size_type sizex(void) = 0;
+		virtual size_type sizey(void) = 0;
+
+		inline void setcx(SystemStates<T> &x);
+		inline void unsetcx(void);
 };
 
 template<typename T>
 LocalSystem<T>::LocalSystem(void)
 {
+	this->init();
 	return;
 }
 
 template<typename T>
-inline Connection<T>& LocalSystem<T>::get(long i)
+LocalSystem<T>::LocalSystem(DynamicalSystem<T>& network, const size_type basex, const size_type basey = 0)
+{
+	this->init(network,basex,basey);
+	return;
+}
+
+template<typename T>
+inline void LocalSystem<T>::init(DynamicalSystem<T>& network, const size_type basex, const size_type basey = 0)
+{
+	this->currentx = NULL;
+	this->network = &network;
+	this->basex = basex;
+	this->basey = basey;
+	return;
+}
+
+template<typename T>
+inline void LocalSystem<T>::init()
+{
+	this->currentx = NULL;
+	this->network = NULL;
+	this->basex = 0;
+	this->basey = 0;
+	return;
+}
+
+template<typename T>
+inline void LocalSystem<T>::rebase(const size_type basex, const size_type basey = 0)
+{
+	this->basex = basex;
+	this->basey = basey;
+}
+
+
+
+template<typename T>
+inline T& LocalSystem<T>::x(const size_type index)
+{
+	if ( (index < 0) || (index >= this->sizex()) )
+	{
+		throw std::out_of_range("LocalSystem::x");
+	}
+	return this->currentx->at(this->basex+index);
+}
+
+template<typename T>
+inline T LocalSystem<T>::x(const size_type index) const
+{
+	if ( (index < 0) || (index >= this->sizex()) )
+	{
+		throw std::out_of_range("LocalSystem::x");
+	}
+	return this->currentx->at(this->basex+index);
+}
+
+template<typename T>
+inline T& LocalSystem<T>::dx(const size_type index)
+{
+	if ( (index < 0) || (index >= this->sizex()) )
+	{
+		throw std::out_of_range("LocalSystem::dx");
+	}
+	return this->network->dx(this->basex+index);
+}
+
+template<typename T>
+inline T LocalSystem<T>::dx(const size_type index) const
+{
+	if ( (index < 0) || (index >= this->sizex()) )
+	{
+		throw std::out_of_range("LocalSystem::dx");
+	}
+	return this->network->dx(this->basex+index);
+}
+
+template<typename T>
+inline T& LocalSystem<T>::y(const size_type index)
+{
+	if ( (index < 0) || (index >= this->sizey()) )
+	{
+		throw std::out_of_range("LocalSystem::y");
+	}
+	return this->network->y(this->basey+index);
+}
+
+template<typename T>
+inline T LocalSystem<T>::y(const size_type index) const
+{
+	if ( (index < 0) || (index >= this->sizey()) )
+	{
+		throw std::out_of_range("LocalSystem::y");
+	}
+	return this->network->y(this->basey+index);
+}
+
+
+
+template<typename T>
+inline Connection<T>& LocalSystem<T>::get(const size_type i)
 {
 	return *this->neighbors[i];
 }
@@ -83,7 +214,25 @@ inline void LocalSystem<T>::add(Connection<T>& connection)
 	return;
 }
 
+template<typename T>
+inline typename LocalSystem<T>::size_type LocalSystem<T>::sizen(void) const
+{
+	return this->neighbors.size();
+}
 
+template<typename T>
+inline void LocalSystem<T>::setcx(SystemStates<T> &x)
+{
+	this->currentx = &x;
+	return;
+}
+
+template<typename T>
+inline void LocalSystem<T>::unsetcx(void)
+{
+	this->currentx = NULL;
+	return;
+}
 
 #endif
 

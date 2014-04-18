@@ -63,6 +63,8 @@ inline void Network<T>::add(LocalSystem<T>& system)
 	long nstates = this->sizex();
 	long noutputs = this->sizey();
 
+	system.init(*this,nstates, noutputs);
+
 	this->systems.push_back(&system);
 	nstates += system.sizex();
 	noutputs += system.sizey();
@@ -77,13 +79,11 @@ template<typename T>
 void Network<T>::f(T t, SystemStates<T>& x)
 {
 	SystemStates<T> localx;
-	long idx = 0;
-	long idy = 0;
 	for(int i = 0; i < this->systems.size(); ++i)
 	{
-		this->systems[i]->localf(t, x, *this, idx, idy);
-		idx += this->systems[i]->sizex();
-		idy += this->systems[i]->sizey();
+		this->systems[i]->setcx(x);
+		this->systems[i]->localf(t);
+		this->systems[i]->unsetcx();
 	}
 	return;
 }
