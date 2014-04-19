@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="textlogo.svg"
-   inkscape:export-filename="/home/adrien/Projets/SysSim/others/logo.png"
-   inkscape:export-xdpi="299.92557"
-   inkscape:export-ydpi="299.92557">
+   inkscape:export-filename="/home/adrien/Projets/SysSim/others/textlogo_small.png"
+   inkscape:export-xdpi="50.253109"
+   inkscape:export-ydpi="50.253109">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="274.15712"
-     inkscape:cy="206.78092"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="187.07298"
+     inkscape:cy="231.1119"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -53,7 +53,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
