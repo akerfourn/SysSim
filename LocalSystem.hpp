@@ -94,6 +94,9 @@ class LocalSystem
 
 		inline void setcx(SystemStates<T> &x);
 		inline void unsetcx(void);
+
+		inline size_type getbasex(void);
+		inline size_type getbasey(void);
 };
 
 template<typename T>
@@ -232,6 +235,18 @@ inline void LocalSystem<T>::unsetcx(void)
 {
 	this->currentx = NULL;
 	return;
+}
+
+template<typename T>
+inline typename LocalSystem<T>::size_type LocalSystem<T>::getbasex(void)
+{
+	return this->basex;
+}
+
+template<typename T>
+inline typename LocalSystem<T>::size_type LocalSystem<T>::getbasey(void)
+{
+	return this->basey;
 }
 
 #endif
