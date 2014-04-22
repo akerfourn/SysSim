@@ -35,6 +35,7 @@
 
 #include "Connection.hpp"
 #include "LocalSystem.hpp"
+#include "Network.hpp"
 
 template<typename T>
 class StatesCoupling: public Connection<T>
@@ -42,36 +43,44 @@ class StatesCoupling: public Connection<T>
 	public: typedef typename LocalSystem<T>::size_type size_type;
 
 	protected:
-		size_t from, to;
+		size_type from, to;
+
+		Network<T> network*;
 
 	public:
 		StatesCoupling(void);
-		StatesCoupling(const size_type from,const size_type to);
-		StatesCoupling(const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0);
+		StatesCoupling(Network<T>& network, const size_type from,const size_type to);
+		StatesCoupling(Network<T>& network, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0);
 		virtual ~StatesCoupling(void){};
 
 		void setStates(const size_type from, const size_type to);
 		void setStates(const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0);
+
+		void setNetwork(Network<T>& network);
+		void setNetwork(Network<T>* network);
 }
 
 template<typename T>
 StatesCoupling<T>::StatesCoupling(void)
 {
+	this->setNetwork((Network<T>*)NULL);
 	this->setStates((size_type)0, (size_type)0);
 	return;
 }
 
 template<typename T>
-StatesCoupling<T>::StatesCoupling(const size_type from, const size_type to)
+StatesCoupling<T>::StatesCoupling(Network<T>& network, const size_type from, const size_type to)
 {
 	this->setStates(from, to);
+	this->setNetwork(network);
 	return;
 }
 
 template<typename T>
-StatesCoupling<T>::StatesCoupling(const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0)
+StatesCoupling<T>::StatesCoupling(Network<T>& network, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0)
 {
 	this->setStates(from, to, stateoffset);
+	this->setNetwork(network);
 	return;
 }
 
@@ -93,15 +102,21 @@ void StatesCoupling<T>::setStates(const LocalSystem<T>& from, const LocalSystem<
 	return;
 }
 
+template<typename T>
+inline void StatesCoupling<T>::setNetwork(Network<T>& network)
+{
+	this->setNetwork(&network);
+	return;
+}
 
+template<typename T>
+inline void StatesCoupling<T>::setNetwork(Network<T>* network)
+{
+	this->network = network;
+	return;
+}
 
-
-
-
-
-
-
-
+	
 
 
 
