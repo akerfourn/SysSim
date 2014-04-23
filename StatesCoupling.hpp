@@ -45,20 +45,23 @@ class StatesCoupling: public Connection<T>
 	protected:
 		size_type from, to;
 
-		Network<T> network*;
+		Network<T>* network;
 
 	public:
 		StatesCoupling(void);
 		StatesCoupling(Network<T>& network, const size_type from,const size_type to);
-		StatesCoupling(Network<T>& network, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0);
+		StatesCoupling(Network<T>& network, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset);
 		virtual ~StatesCoupling(void){};
 
 		void setStates(const size_type from, const size_type to);
-		void setStates(const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0);
+		void setStates(const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset);
 
 		void setNetwork(Network<T>& network);
 		void setNetwork(Network<T>* network);
-}
+
+		size_type getfrom(void) const;
+		size_type getto(void) const;
+};
 
 template<typename T>
 StatesCoupling<T>::StatesCoupling(void)
@@ -79,7 +82,7 @@ StatesCoupling<T>::StatesCoupling(Network<T>& network, const size_type from, con
 template<typename T>
 StatesCoupling<T>::StatesCoupling(Network<T>& network, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0)
 {
-	this->setStates(from, to, stateoffset);
+	this->setStates(from, to, statesoffset);
 	this->setNetwork(network);
 	return;
 }
@@ -116,7 +119,17 @@ inline void StatesCoupling<T>::setNetwork(Network<T>* network)
 	return;
 }
 
-	
+template<typename T>
+inline typename StatesCoupling<T>::size_type StatesCoupling<T>::getfrom(void) const
+{
+	return this->from;
+}
+
+template<typename T>
+inline typename StatesCoupling<T>::size_type StatesCoupling<T>::getto(void) const
+{
+	return this->to;
+}
 
 
 

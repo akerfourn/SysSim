@@ -54,7 +54,7 @@ class GainCoupling: public StatesCoupling<T>
 			this->setGain(gain);
 			return;
 		}
-		GainCoupling(Network<T>& network, const T gain, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset = 0):StatesCoupling<T>(network,from,to,stateoffset)
+		GainCoupling(Network<T>& network, const T gain, const LocalSystem<T>& from, const LocalSystem<T>& to, const size_type statesoffset):StatesCoupling<T>(network,from,to,statesoffset)
 		{
 			this->setGain(gain);
 			return;
@@ -64,7 +64,7 @@ class GainCoupling: public StatesCoupling<T>
 
 		virtual T operator()(void);
 
-}
+};
 
 template<typename T>
 inline void GainCoupling<T>::setGain(const T gain)
@@ -74,9 +74,9 @@ inline void GainCoupling<T>::setGain(const T gain)
 }
 
 template<typename T>
-virtual T GainCoupling<T>::operator()(void)
+inline T GainCoupling<T>::operator()(void)
 {
-	return (this->gain)*(network.x(this->from) - network.x(this->to));
+	return (this->gain)*(this->network->x(this->from) - this->network->x(this->to));
 }
 
 
