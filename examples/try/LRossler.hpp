@@ -34,6 +34,8 @@
  */
 
 #include "LocalSystem.hpp"
+#include "GainCoupling.hpp"
+#include <iostream>
 
 template<typename T>
 class LRossler: public LocalSystem<T>
@@ -46,31 +48,25 @@ class LRossler: public LocalSystem<T>
 		using LocalSystem<T>::x;
 		using typename LocalSystem<T>::size_type;
 
-		LRossler(void);
-		LRossler(T a, T b, T c);
+		LRossler(void):LocalSystem<T>()
+		{
+			this->changeparameters( (T)0.432, (T)2.0, (T)4.0 );
+			return;
+		}
+		LRossler(T a, T b, T c):LocalSystem<T>()
+		{
+			this->changeparameters(a, b, c);
+			return;
+		}
 
 		inline void changeparameters(T a, T b, T c);
 
 		virtual void localf(T t);
 
-		virtual size_type sizex(void){return (size_type)3;};
-		virtual size_type sizey(void){return (size_type)0;};
+		virtual inline size_type sizex(void){return (size_type)3;};
+		virtual inline size_type sizey(void){return (size_type)0;};
 
 };
-
-template<typename T>
-LRossler<T>::LRossler(void)
-{
-	this->changeparameters( (T)0.432, (T)2.0, (T)4.0 );
-	return;
-}
-
-template<typename T>
-LRossler<T>::LRossler(T a, T b, T c)
-{
-	this->changeparameters(a, b, c);
-	return;
-}
 
 
 template<typename T>
@@ -86,16 +82,15 @@ inline void LRossler<T>::changeparameters(T a, T b, T c)
 template<typename T>
 void LRossler<T>::localf(T t)
 {
-
-	T u = 0;
-	for (int i = 0; i < this->sizen(); ++i)
-	{
-		u += this->get(i)();
-	}
-
-	dx(0) = -x(1) - x(2) + u;
+	dx(0) = -x(1) - x(2);
 	dx(1) = x(0) + a * x(1);
 	dx(2) = b + x(2) * ( x(0) - c);
+
+	for (int i = 0; i < this->sizen(); ++i)
+	{
+		StatesCoupling<T> &toto = (StatesCoupling<T>&)this->get(i);
+		dx( toto.getto() - this->basex ) += this->get(i)();
+	}
 }
 
 
