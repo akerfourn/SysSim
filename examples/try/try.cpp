@@ -6,7 +6,6 @@
 #include "Euler.hpp"
 #include "Simulation.hpp"
 #include "Network.hpp"
-//#include "RosslerConnection.hpp"
 #include "GainCoupling.hpp"
 
 int main(void)
@@ -21,10 +20,6 @@ int main(void)
 	Network<double> network;
 
 	Simulation<double> sim(network,integrator);
-
-//	RosslerConnection<double> c1(network,0,3,5e-1);
-//	RosslerConnection<double> c2(network,3,6,5e-1);
-//	RosslerConnection<double> c3(network,6,0,5e-1);
 
 	network.add(ross1);
 	network.add(ross2);

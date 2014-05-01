@@ -46,7 +46,7 @@ class LRossler: public LocalSystem<T>
 	public:
 		using LocalSystem<T>::dx;
 		using LocalSystem<T>::x;
-		using typename LocalSystem<T>::size_type;
+		typedef typename LocalSystem<T>::size_type size_type;
 
 		LRossler(void):LocalSystem<T>()
 		{
@@ -88,8 +88,7 @@ void LRossler<T>::localf(T t)
 
 	for (int i = 0; i < this->sizen(); ++i)
 	{
-		StatesCoupling<T> &toto = (StatesCoupling<T>&)this->get(i);
-		dx( toto.getto() - this->basex ) += this->get(i)();
+		dx( ((StatesCoupling<T>&)this->get(i)).getto() - this->basex ) += this->get(i)();
 	}
 }
 
