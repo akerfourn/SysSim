@@ -13,11 +13,11 @@
    height="167.94119"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="textlogo.svg"
-   inkscape:export-filename="/home/adrien/Projets/SysSim/others/textlogo_small.png"
-   inkscape:export-xdpi="50.253109"
-   inkscape:export-ydpi="50.253109">
+   inkscape:export-filename="/home/adrien/Projets/SysSim/others/textlogo.png"
+   inkscape:export-xdpi="199.89571"
+   inkscape:export-ydpi="199.89571">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,17 +27,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="187.07298"
-     inkscape:cy="231.1119"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="230.57047"
+     inkscape:cy="195.03564"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:object-paths="false"
-     inkscape:window-width="1855"
-     inkscape:window-height="1056"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
+     inkscape:window-width="1280"
+     inkscape:window-height="977"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -203,7 +203,7 @@
            y="1012.0635"
            x="103.34547"
            id="tspan3094"
-           sodipodi:role="line">0.4</tspan></text>
+           sodipodi:role="line">0.5</tspan></text>
     </g>
     <g
        id="g3145"
@@ -348,7 +348,7 @@
            sodipodi:role="line"
            id="tspan3094-3"
            x="103.36539"
-           y="1012.0635">0.4</tspan></text>
+           y="1012.0635">0.5</tspan></text>
     </g>
   </g>
 </svg>
