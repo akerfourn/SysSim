@@ -3,7 +3,7 @@ OPTS = -I./../..
 
 all:rnet
 
-rnet: rnet.cpp LRossler.hpp
+rnet: rnet.cpp LRossler.hpp RosslerConnection.hpp
 	$(CXX) -g -o rnet rnet.cpp $(OPTS)
 
 clean: 
