@@ -73,7 +73,7 @@ class Rossler: public DynamicalSystem<T>
 
 		inline void changeparameters(T a, T b, T c);
 
-		virtual void f(T t, SystemStates<T>& x);
+		virtual void f(T t, Vector<T>& x);
 };
 
 
@@ -107,7 +107,7 @@ inline void Rossler<T>::changeparameters(T a, T b, T c)
 }
 
 template<typename T>
-void Rossler<T>::f(T t, SystemStates<T>& x)
+void Rossler<T>::f(T t, Vector<T>& x)
 {
 	dx(0) = -x[1] - x[2];
 	dx(1) = x[0] + a * x[1];
