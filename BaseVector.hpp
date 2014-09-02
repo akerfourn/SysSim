@@ -61,6 +61,8 @@ class BaseVector: public Vector<T>
 		BaseVector(std::vector<T> &data);
 		virtual ~BaseVector();
 		
+		virtual std::vector<T>& getData(void);
+		
 		virtual size_type size(void) const;
 
 		virtual void resize(const size_type size);
@@ -135,7 +137,14 @@ BaseVector<T>::~BaseVector()
 
 
 template<typename T>
-typename Vector<T>::size_type BaseVector<T>::size(void) const
+std::vector<T>& BaseVector<T>::getData(void)
+{
+	return (*this->data);
+}
+
+
+template<typename T>
+typename BaseVector<T>::size_type BaseVector<T>::size(void) const
 {
 	return this->data->size();
 }
