@@ -41,7 +41,7 @@
 #include <vector>
 #include <stdexcept>
 
-#include "SystemStates.hpp"
+#include "Vector.hpp"
 #include "DynamicalSystem.hpp"
 #include "Connection.hpp"
 
@@ -54,7 +54,7 @@ class LocalSystem
 
 		std::vector< Connection<T>* > neighbors;
 
-		SystemStates<T> *currentx;
+		Vector<T> *currentx;
 
 		DynamicalSystem<T> *network;
 		size_type basex;
@@ -92,7 +92,7 @@ class LocalSystem
 		virtual size_type sizex(void) = 0;
 		virtual size_type sizey(void) = 0;
 
-		inline void setcx(SystemStates<T> &x);
+		inline void setcx(Vector<T> &x);
 		inline void unsetcx(void);
 
 		inline size_type getbasex(void) const;
@@ -224,7 +224,7 @@ inline typename LocalSystem<T>::size_type LocalSystem<T>::sizen(void) const
 }
 
 template<typename T>
-inline void LocalSystem<T>::setcx(SystemStates<T> &x)
+inline void LocalSystem<T>::setcx(Vector<T> &x)
 {
 	this->currentx = &x;
 	return;

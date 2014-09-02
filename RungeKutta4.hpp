@@ -40,13 +40,14 @@
  */
 
 #include "Integrators.hpp"
+#include "BaseVector.hpp"
 
 template<typename T>
 class RungeKutta4: public FixedStepIntegrator<T>
 {
 	protected:
 
-		SystemStates<T> k1,k2,k3,tmp;
+		BaseVector<T> k1,k2,k3,tmp;
 
 	public:
 		RungeKutta4(void):FixedStepIntegrator<T>(){};
@@ -61,41 +62,41 @@ void RungeKutta4<T>::operator()(T &t, DynamicalSystem<T> &system)
 {
 	long i;
 
-	k1.resize(system.size());
-	k2.resize(system.size());
-	k3.resize(system.size());	
+	k1.resize(system.sizex());
+	k2.resize(system.sizex());
+	k3.resize(system.sizex());	
 
-	tmp.resize(system.size());
+	tmp.resize(system.sizex());
 
-	system.f(t, system);
+	system.f(t, system.getx());
 
-	for (i = 0; i < system.size(); ++i)
+	for (i = 0; i < system.sizex(); ++i)
 	{
 		k1[i] = system.dx(i);
-		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k1[i];
+		tmp[i] = system.x(i) + ( this->step / ((T)2.0) ) * k1[i];
 	}
 
 	system.f(t + ( this->step / ((T)2.0) ), tmp);
 
-	for (i = 0; i < system.size(); ++i)
+	for (i = 0; i < system.sizex(); ++i)
 	{
 		k2[i] = system.dx(i);
-		tmp[i] = system[i] + ( this->step / ((T)2.0) ) * k2[i];
+		tmp[i] = system.x(i) + ( this->step / ((T)2.0) ) * k2[i];
 	}
 
 	system.f(t + ( this->step / ((T)2.0) ), tmp);
 	
-	for (i = 0; i < system.size(); ++i)
+	for (i = 0; i < system.sizex(); ++i)
 	{
 		k3[i] = system.dx(i);
-		tmp[i] = system[i] + this->step * k3[i];
+		tmp[i] = system.x(i) + this->step * k3[i];
 	}
 
 	system.f(t + this->step, tmp);
 
-	for (i = 0; i < system.size(); ++i)
+	for (i = 0; i < system.sizex(); ++i)
 	{
-		system[i] = system[i] + ( this->step / ((T)6.0) ) * ( k1[i] + ((T)2.0) * k2[i] + ((T)2.0) * k3[i] + system.dx(i) );
+		system.x(i) = system.x(i) + ( this->step / ((T)6.0) ) * ( k1[i] + ((T)2.0) * k2[i] + ((T)2.0) * k3[i] + system.dx(i) );
 	}
 
 	t = t + this->step;

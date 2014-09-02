@@ -303,9 +303,9 @@ void Simulation<T>::run(std::ostream &ostream, SimulationPredicate<T> &transiant
 			this->WScount = 0;
 		}
 
-		preop(*this->integrator, *this->dynamicalsystem);		// Processing Pre-integration
+		preop(*this->integrator, this->dynamicalsystem->getx());		// Processing Pre-integration
 		(*this->integrator)(this->time, *this->dynamicalsystem);
-		postop(*this->integrator, *this->dynamicalsystem);		// Processing Post-integration
+		postop(*this->integrator, this->dynamicalsystem->getx());		// Processing Post-integration
 	}
 
 	return;

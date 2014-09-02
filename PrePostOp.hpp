@@ -41,6 +41,7 @@
 
 #include "Integrators.hpp"
 #include "SystemStates.hpp"
+#include "Vector.hpp"
 
 template<typename T>
 class PrePostOp
@@ -49,7 +50,7 @@ class PrePostOp
 		PrePostOp(void){};
 		virtual ~PrePostOp(){};
 
-		virtual void operator()(Integrator<T>& integrator, SystemStates<T>& states) = 0;
+		virtual void operator()(Integrator<T>& integrator, Vector<T>& states) = 0;
 };
 
 /*	NoOp	(No Operation)
@@ -62,11 +63,11 @@ template<typename T>
 class NoOp: public PrePostOp<T>
 {
 	public:
-		void operator()(Integrator<T>& integrator, SystemStates<T>& states);
+		void operator()(Integrator<T>& integrator, Vector<T>& states);
 };
 
 template<typename T>
-inline void NoOp<T>::operator()(Integrator<T>& integrator, SystemStates<T>& states)
+inline void NoOp<T>::operator()(Integrator<T>& integrator, Vector<T>& states)
 {
 	return;
 }

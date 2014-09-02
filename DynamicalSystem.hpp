@@ -75,53 +75,53 @@
  * où le contenu de la classe B est absolument vide ?
  */
 
-#include <vector>
+#include <string>
+#include <sstream>
 
-#include "SystemStates.hpp"
+#include "Vector.hpp"
 
 template<typename T>
-class DynamicalSystem: public SystemStates<T>
+class DynamicalSystem
 {
 	protected:
-		std::vector<T> mdx;
-		std::vector<T> my;
+		
+		Vector<T> *mx;
+		Vector<T> *mdx;
+		Vector<T> *my;
+		
+		bool self_mx;
+		bool self_mdx;
+		bool self_my;
 
 	public:
 
-		typedef typename std::vector<T>::size_type size_type;
+		typedef typename Vector<T>::size_type size_type;
 
-		DynamicalSystem(void):SystemStates<T>(){};
-		DynamicalSystem(const size_type nstates):SystemStates<T>(nstates)
-		{
-			this->mdx.resize(nstates);
-		};
-		DynamicalSystem(const size_type nstates, const size_type noutput):SystemStates<T>(nstates)
-		{
-			this->mdx.resize(nstates);
-			this->my.resize(noutput);
-		};
-		DynamicalSystem(DynamicalSystem<T> &ref):SystemStates<T>(ref)
-		{
-			this->mdx.resize(ref.sizedx());
-			this->my.resize(ref.sizey());
-		};
-		virtual ~DynamicalSystem(void){};
-
-		inline void resize(const size_type nbstates, const size_type nboutput);
-		inline void resize(const DynamicalSystem<T> &ref);
+		DynamicalSystem(void);
+		DynamicalSystem(const size_type nstates);
+		DynamicalSystem(const size_type nstates, const size_type noutput);
+		DynamicalSystem(DynamicalSystem<T> &ref);
+		virtual ~DynamicalSystem(void);
+		
+		inline Vector<T>& getx(void);
+		inline Vector<T>& getdx(void);
+		inline Vector<T>& gety(void);
 
 		inline void copy(const DynamicalSystem<T> &ref);
 
 		/* La fonction "f" définie la dynamique du système en fonction du temps
 		 * "t" et d'un vecteur d'état "state".
 		 */
-		virtual void f(T t, SystemStates<T>& state) = 0;
+		virtual void f(T t, Vector<T>& state) = 0;
 		virtual inline void f(T t);
 
-		virtual void h(T t, SystemStates<T>& state);
+		virtual void h(T t, Vector<T>& state);
 		virtual inline void h(T t);
 
-		virtual inline void init(const DynamicalSystem<T> &xi);
+		virtual void init(void);
+		virtual void init(const size_type nstates);
+		virtual void init(const size_type nstates, const size_type noutput);
+		virtual void init(const DynamicalSystem<T> &ref);
 		virtual void init(const T xi[]);
 		virtual void init(const std::vector<T> &xi);
 
@@ -134,26 +134,97 @@ class DynamicalSystem: public SystemStates<T>
 		inline T &x(const size_type index);
 		inline T x(const size_type index) const;
 
-		virtual inline size_type sizex(void) const;
-		virtual inline size_type sizedx(void) const;
-		virtual inline size_type sizey(void) const;
+		virtual size_type sizex(void) const;
+		virtual size_type sizedx(void) const;
+		virtual size_type sizey(void) const;
+		
+		virtual inline void toString(std::string &string);
+		virtual inline void toString(std::string &string, int precision, int width, char separator);
 
 };
 
-
-
+template<typename T>
+DynamicalSystem<T>::DynamicalSystem(void)
+{
+	this->init();
+	return;
+}
 
 template<typename T>
-inline void DynamicalSystem<T>::f(T t)
+DynamicalSystem<T>::DynamicalSystem(const size_type nstates)
 {
-	this->f(t,*this);
+	this->init();
+	this->init(nstates);
+	return;
+}
+
+template<typename T>
+DynamicalSystem<T>::DynamicalSystem(const size_type nstates, const size_type noutput)
+{
+	this->init();
+	this->init(nstates,noutput);
+	return;
+}
+
+template<typename T>
+DynamicalSystem<T>::DynamicalSystem(DynamicalSystem<T> &ref)
+{
+	this->init();
+	this->init(ref);
+	return;
+}
+
+template<typename T>
+DynamicalSystem<T>::~DynamicalSystem(void)
+{
+	if (this->self_mx == true)
+	{
+		delete this->mx;
+	}
+	if (this->self_mdx == true)
+	{
+		delete this->mdx;
+	}
+	if (this->self_my == true)
+	{
+		delete this->my;
+	}
 	return;
 }
 
 
 
 template<typename T>
-void DynamicalSystem<T>::h(T t, SystemStates<T>& state)
+inline Vector<T>& DynamicalSystem<T>::getx(void)
+{
+	return (*this->mx);
+}
+
+template<typename T>
+inline Vector<T>& DynamicalSystem<T>::getdx(void)
+{
+	return (*this->mdx);
+}
+
+template<typename T>
+inline Vector<T>& DynamicalSystem<T>::gety(void)
+{
+	return (*this->my);
+}
+
+
+
+template<typename T>
+inline void DynamicalSystem<T>::f(T t)
+{
+	this->f(t,this->getx());
+	return;
+}
+
+
+
+template<typename T>
+void DynamicalSystem<T>::h(T t, Vector<T>& state)
 {
 	return;
 }
@@ -161,12 +232,12 @@ void DynamicalSystem<T>::h(T t, SystemStates<T>& state)
 template<typename T>
 inline void DynamicalSystem<T>::h(T t)
 {
-	this->h(t,*this);
+	this->h(t,this->getx());
 	return;
 }
 
 
-
+/*
 
 template<typename T>
 inline void DynamicalSystem<T>::resize(const size_type nbstates, const size_type nboutput)
@@ -187,19 +258,22 @@ inline void DynamicalSystem<T>::resize(const DynamicalSystem<T> &ref)
 	return;
 }
 
-
+*/
 
 template<typename T>
 inline void DynamicalSystem<T>::copy(const DynamicalSystem<T> &ref)
 {
-	SystemStates<T>::copy(ref);
+	for(size_type i = (size_type)0; i < ref.sizex(); ++i)
+	{
+		this->x(i) = ref.x(i);
+	}
 
-	for(size_type i; i < ref.sizedx(); ++i)
+	for(size_type i = (size_type)0; i < ref.sizedx(); ++i)
 	{
 		this->dx(i) = ref.dx(i);
 	}
 
-	for(size_type i; i < ref.sizey(); ++i)
+	for(size_type i = (size_type)0; i < ref.sizey(); ++i)
 	{
 		this->y(i) = ref.y(i);
 	}
@@ -209,9 +283,51 @@ inline void DynamicalSystem<T>::copy(const DynamicalSystem<T> &ref)
 
 
 template<typename T>
-inline void DynamicalSystem<T>::init(const DynamicalSystem<T> &xi)
+void DynamicalSystem<T>::init(void)
 {
-	this->copy(xi);
+	this->mx = NULL;
+	this->my = NULL;
+	this->mdx = NULL;
+	this->self_mx = false;
+	this->self_my = false;
+	this->self_mdx = false;
+	return;
+}
+
+template<typename T>
+void DynamicalSystem<T>::init(const size_type nstates)
+{
+	if (this->self_mx == true)
+	{
+		delete this->mx;
+	}
+	if (this->self_mdx == true)
+	{
+		delete this->my;
+	}
+	this->mx = new BaseVector<T>(nstates);
+	this->mdx = new BaseVector<T>(nstates);
+	this->self_mx = true;
+	this->self_mdx = true;
+	return;
+}
+
+template<typename T>
+void DynamicalSystem<T>::init(const size_type nstates, const size_type noutput)
+{
+	if (this->self_my == true)
+	{
+		delete this->my;
+	}
+	this->my = new BaseVector<T>(noutput);
+	this->self_my = true;
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::init(const DynamicalSystem<T> &ref)
+{
+	// TODO
 	return;
 }
 
@@ -220,7 +336,7 @@ void DynamicalSystem<T>::init(const T xi[])
 {
 	for(size_type i = 0; i < this->sizex(); ++i)
 	{
-		this->at(i) = xi[i];
+		this->x(i) = xi[i];
 	}
 	return;
 }
@@ -231,7 +347,7 @@ void DynamicalSystem<T>::init(const std::vector<T> &xi)
 {
 	for(size_type i = 0; i < this->sizex(); ++i)
 	{
-		this->at(i) = xi[i];
+		this->x(i) = xi[i];
 	}
 	return;
 }
@@ -241,55 +357,117 @@ void DynamicalSystem<T>::init(const std::vector<T> &xi)
 template<typename T>
 inline T& DynamicalSystem<T>::y(const size_type index)
 {
-	return this->my[index];
+	return (*this->my)[index];
 }
 
 template<typename T>
 inline T DynamicalSystem<T>::y(const size_type index) const
 {
-	return this->my[index];
+	return (*this->my)[index];
 }
 
 template<typename T>
 inline T& DynamicalSystem<T>::dx(const size_type index)
 {
-	return this->mdx[index];
+	return (*this->mdx)[index];
 }
 
 template<typename T>
 inline T DynamicalSystem<T>::dx(const size_type index) const
 {
-	return this->mdx[index];
+	return (*this->mdx)[index];
 }
 
 template<typename T>
 inline T& DynamicalSystem<T>::x(const size_type index)
 {
-	return this->at(index);
+	return (*this->mx)[index];
 }
 
 template<typename T>
 inline T DynamicalSystem<T>::x(const size_type index) const
 {
-	return this->at(index);
+	return (*this->mx)[index];
 }
 
 template<typename T>
 inline typename DynamicalSystem<T>::size_type DynamicalSystem<T>::sizex(void) const
 {
-	return this->size();
+	return this->mx->size();
 }
 
 template<typename T>
 inline typename DynamicalSystem<T>::size_type DynamicalSystem<T>::sizedx(void) const
 {
-	return this->mdx.size();
+	return this->mdx->size();
 }
 
 template<typename T>
 inline typename DynamicalSystem<T>::size_type DynamicalSystem<T>::sizey(void) const
 {
-	return this->my.size();
+	return this->my->size();
+}
+
+
+
+/* Affichage */
+
+template<typename T>
+inline void DynamicalSystem<T>::toString(std::string &string)
+{
+	this->toString(string,2,6,' ');
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::toString(std::string &string, int precision, int width , char separator = ' ')
+/*    Ajoute les élements de l'objet SystemStates à la chaine de caractère
+ * "string". Les éléments sont ajouter les uns à la suite des autres en
+ * commençant par les éléments de x puis en terminant avec les élements de y.
+ *    Les valeurs sont écritent avec un certain nombre de chiffres après la
+ * virgule défini par la variable "precision".
+ *	  De plus les valeurs sont écrite sur un certain nombre de caractères
+ * (total) défini par la variable "width".
+ *	  Les élements sont séparés les uns des autres par un séparateur
+ * (typiquement une espace ' ' ou une tabulation '\t') défini par la variable
+ * "separator". Par défaut, le séparateur utilisé est l'espace ' '.
+ */
+{
+
+	std::ostringstream oss;
+	size_type i;
+
+	oss.setf(std::ios::fixed, std::ios::floatfield);
+	oss.setf(std::ios::left, std::ios::adjustfield);
+
+	if ( (this->sizex() <= 0) )
+	{
+		return;
+	}
+
+	if (string.length() > 0)
+	{
+		string += separator;
+	}
+
+	if (this->sizex() > 0)
+	{
+		oss.precision(precision);
+		oss.width(width);
+		oss << this->x(0);
+		string += oss.str();
+		oss.str("");
+
+		for(i = 1; i < this->sizex(); ++i)
+		{
+			oss.precision(precision);
+			oss.width(width);
+			oss << this->x(i);
+			string += separator + oss.str();
+			oss.str("");
+		}
+	}
+	
 }
 
 #endif

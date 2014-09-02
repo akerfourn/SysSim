@@ -40,6 +40,7 @@
 #include <vector>
 
 #include "DynamicalSystem.hpp"
+#include "Vector.hpp"
 
 
 template<typename T>
@@ -54,7 +55,7 @@ class Network: public DynamicalSystem<T>
 
 		void add(LocalSystem<T>& system);
 
-		virtual void f(T t, SystemStates<T>& x);
+		virtual void f(T t, Vector<T>& x);
 };
 
 template<typename T>
@@ -76,9 +77,8 @@ inline void Network<T>::add(LocalSystem<T>& system)
 
 
 template<typename T>
-void Network<T>::f(T t, SystemStates<T>& x)
+void Network<T>::f(T t, Vector<T>& x)
 {
-	SystemStates<T> localx;
 	for(int i = 0; i < this->systems.size(); ++i)
 	{
 		this->systems[i]->setcx(x);

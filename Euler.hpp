@@ -57,13 +57,13 @@ class Euler: public FixedStepIntegrator<T>
 template<typename T>
 void Euler<T>::operator()(T &t, DynamicalSystem<T> &system)
 {
-	long i;
+	long i;	// TODO : Change type to size_type
 
-	system.f(t,system);
+	system.f(t,system.getx());
 
-	for(i = 0; i < system.size(); ++i)
+	for(i = 0; i < system.sizex(); ++i)
 	{
-		system[i] = system[i] + (this->step) * system.dx(i);
+		system.x(i) = system.x(i) + (this->step) * system.dx(i);
 	}
 
 	t = t + this->step;
