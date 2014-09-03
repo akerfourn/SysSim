@@ -27,7 +27,11 @@ class SubVector: public Vector<T>
 		
 		virtual size_type getBegin(void) const;
 		virtual size_type getEnd(void) const;
+		
 		virtual Vector<T>& getVector(void);
+		virtual void setVector(Vector<T> &vector);
+		
+		virtual void copy(SubVector<T> &ref);
 		
 		virtual size_type sizeVector(void) const;
 		virtual size_type size(void) const;
@@ -91,6 +95,7 @@ template<typename T>
 SubVector<T>::SubVector(size_type begin, size_type end)
 {
 	this->init(begin,end);
+	return;
 }
 
 template<typename T>
@@ -120,10 +125,28 @@ typename SubVector<T>::size_type SubVector<T>::getEnd(void) const
 	return this->end;
 }
 
+
 template<typename T>
 Vector<T>& SubVector<T>::getVector(void)
 {
 	return (*this->vector);
+}
+
+template<typename T>
+void SubVector<T>::setVector(Vector<T> &vector)
+{
+	this->vector = &vector;
+	return;
+}
+
+
+template<typename T>
+void SubVector<T>::copy(SubVector<T> &ref)
+{
+	this->begin = ref.getBegin();
+	this->end = ref.getEnd();
+	this->vector = &ref.getVector();
+	return;
 }
 
 

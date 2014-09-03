@@ -53,15 +53,20 @@ class BaseVector: public Vector<T>
 		inline void init(void);
 		inline void init(const size_type size);
 		inline void init(std::vector<T> &data);
+		inline void init(BaseVector<T> &vector);
 		
 	public:
 		
 		BaseVector(void);
 		BaseVector(const size_type size);
 		BaseVector(std::vector<T> &data);
+		BaseVector(BaseVector<T> &vector);
 		virtual ~BaseVector();
 		
 		virtual std::vector<T>& getData(void);
+		virtual void setData(std::vector<T> &data);
+		
+		virtual void copy(BaseVector<T> &vector);
 		
 		virtual size_type size(void) const;
 
@@ -106,6 +111,12 @@ inline void BaseVector<T>::init(std::vector<T> &data)
 	this->data = &data;
 }
 
+template<typename T>
+inline void BaseVector<T>::init(BaseVector<T> &vector)
+{
+	this->copy(vector);
+}
+
 
 template<typename T>
 BaseVector<T>::BaseVector(void)
@@ -129,6 +140,13 @@ BaseVector<T>::BaseVector(std::vector<T> &data)
 }
 
 template<typename T>
+BaseVector<T>::BaseVector(BaseVector<T> &vector)
+{
+	this->init(vector);
+	return;
+}
+
+template<typename T>
 BaseVector<T>::~BaseVector()
 {
 	delete this->data;
@@ -140,6 +158,24 @@ template<typename T>
 std::vector<T>& BaseVector<T>::getData(void)
 {
 	return (*this->data);
+}
+
+template<typename T>
+void BaseVector<T>::setData(std::vector<T> &data)
+{
+	this->data = &data;
+	return;
+}
+
+
+template<typename T>
+void BaseVector<T>::copy(BaseVector<T> &vector)
+{
+	if (this->data != NULL)
+	{
+		delete this->data;
+	}
+	this->data = new std::vector<T>(vector.getData());	// TODO Check that is a true copy (no reference to the other object)
 }
 
 
