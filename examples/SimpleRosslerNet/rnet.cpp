@@ -6,6 +6,7 @@
 #include "Simulation.hpp"
 #include "Network.hpp"
 #include "RosslerConnection.hpp"
+#include "examples/SimpleRosslerNet/Rossler.hpp"
 
 int main(void)
 {
@@ -13,6 +14,7 @@ int main(void)
 	LRossler<double> ross1(0.398,2.0,4.0);
 	LRossler<double> ross2(0.398,2.0,4.0);
 	LRossler<double> ross3(0.398,2.0,4.0);
+	Rossler<double> ross4(0.398,2.0,4.0,false);
 
 	RungeKutta4<double> integrator(1e-2);
 	Network<double> network;
@@ -26,22 +28,28 @@ int main(void)
 	network.add(ross1);
 	network.add(ross2);
 	network.add(ross3);
+	network.add(ross4);
+	network.finish();
 
 	ross1.add(c3);
 	ross2.add(c1);
 	ross3.add(c2);
 
-	network[0] = (double)1.85;
-	network[1] = (double)0.42;
-	network[2] = (double)1.07;
+	network.x(0) = (double)1.85;
+	network.x(1) = (double)0.42;
+	network.x(2) = (double)1.07;
 
-	network[3] = (double)1.88;
-	network[4] = (double)0.67;
-	network[5] = (double)2.86;
+	network.x(3) = (double)1.88;
+	network.x(4) = (double)0.67;
+	network.x(5) = (double)2.86;
 
-	network[6] = (double)0.02;
-	network[7] = (double)0.71;
-	network[8] = (double)0.89;
+	network.x(6) = (double)0.02;
+	network.x(7) = (double)0.71;
+	network.x(8) = (double)0.89;
+	
+	ross4.x(0) = 0.0;
+	ross4.x(1) = 0.0;
+	ross4.x(2) = 0.0;
 
 	double ti = 0.0;
 	double tf = 200.0;
