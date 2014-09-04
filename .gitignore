@@ -19,4 +19,5 @@ tests/*
 examples/Rossler/Rossler
 examples/try/try
 examples/SimpleRosslerNet/rnet
+examples/VectorTest/Vector
 *.dat
