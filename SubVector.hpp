@@ -16,6 +16,7 @@ class SubVector: public Vector<T>
 		
 		inline void init(void);
 		inline void init(Vector<T> &base, size_type begin, size_type end);
+		inline void init(Vector<T> *base, size_type begin, size_type end);
 		inline void init(size_type begin, size_type end);
 	
 	public:
@@ -23,13 +24,15 @@ class SubVector: public Vector<T>
 		SubVector(void);
 		SubVector(size_type begin, size_type end);
 		SubVector(Vector<T> &base, size_type begin, size_type end);
+		SubVector(Vector<T> *base, size_type begin, size_type end);
 		virtual ~SubVector();
 		
 		virtual size_type getBegin(void) const;
 		virtual size_type getEnd(void) const;
 		
 		virtual Vector<T>& getVector(void);
-		virtual void setVector(Vector<T> &vector);
+		inline void setVector(Vector<T> &vector);
+		virtual void setVector(Vector<T> *vector);
 		
 		virtual void copy(SubVector<T> &ref);
 		
@@ -69,8 +72,15 @@ inline void SubVector<T>::init(void)
 template<typename T>
 inline void SubVector<T>::init(Vector<T> &base, size_type begin, size_type end)
 {
+	this->init(*base, begin,end);
+	return;
+}
+
+template<typename T>
+inline void SubVector<T>::init(Vector<T> *base, size_type begin, size_type end)
+{
 	this->init(begin, end);
-	this->vector = &base;
+	this->vector = base;
 	return;
 }
 
@@ -99,9 +109,16 @@ SubVector<T>::SubVector(size_type begin, size_type end)
 }
 
 template<typename T>
-SubVector<T>::SubVector(Vector<T> &base, size_type begin, size_type end)
+SubVector<T>::SubVector(Vector<T> *base, size_type begin, size_type end)
 {
 	this->init(base,begin,end);
+	return;
+}
+
+template<typename T>
+SubVector<T>::SubVector(Vector<T> &base, size_type begin, size_type end)
+{
+	this->init(&base,begin,end);
 	return;
 }
 
@@ -133,9 +150,16 @@ Vector<T>& SubVector<T>::getVector(void)
 }
 
 template<typename T>
-void SubVector<T>::setVector(Vector<T> &vector)
+inline void SubVector<T>::setVector(Vector<T> &vector)
 {
-	this->vector = &vector;
+	this->setVector(&vector);
+	return;
+}
+
+template<typename T>
+void SubVector<T>::setVector(Vector<T> *vector)
+{
+	this->vector = vector;
 	return;
 }
 

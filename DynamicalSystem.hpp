@@ -104,8 +104,10 @@ class DynamicalSystem
 		DynamicalSystem(void);
 		DynamicalSystem(const size_type nstates, const bool newvectors = true);
 		DynamicalSystem(Vector<T> &x, Vector<T> &dx);
+		DynamicalSystem(Vector<T> *x, Vector<T> *dx);
 		DynamicalSystem(const size_type nstates, const size_type noutputs, const bool newvectors = true);
 		DynamicalSystem(Vector<T> &x, Vector<T> &dx, Vector<T> &y);
+		DynamicalSystem(Vector<T> *x, Vector<T> *dx, Vector<T> *y);
 		DynamicalSystem(DynamicalSystem<T> &ref);
 		virtual ~DynamicalSystem(void);
 		
@@ -114,9 +116,13 @@ class DynamicalSystem
 		inline Vector<T>& gety(void);
 		
 		inline void setx(Vector<T> &x, bool force_self = false);
+		inline void setx(Vector<T> *x, bool force_self = false);
 		inline void setx(Vector<T> &x, Vector<T> &dx, bool force_self = false);
+		inline void setx(Vector<T> *x, Vector<T> *dx, bool force_self = false);
 		inline void setdx(Vector<T> &dx, bool force_self = false);
+		inline void setdx(Vector<T> *dx, bool force_self = false);
 		inline void sety(Vector<T> &y, bool force_self = false);
+		inline void sety(Vector<T> *y, bool force_self = false);
 
 		inline void copy(const DynamicalSystem<T> &ref);
 
@@ -131,9 +137,11 @@ class DynamicalSystem
 
 		virtual void init(void);
 		virtual void init(const size_type nstates, const bool newvectors = true);
-		virtual void init(Vector<T> &x, Vector<T> &dx);
+		inline void init(Vector<T> &x, Vector<T> &dx);
+		virtual void init(Vector<T> *x, Vector<T> *dx);
 		virtual void init(const size_type nstates, const size_type noutputs, const bool newvectors = true);
-		virtual void init(Vector<T> &x, Vector<T> &dx, Vector<T> &y);
+		inline void init(Vector<T> &x, Vector<T> &dx, Vector<T> &y);
+		virtual void init(Vector<T> *x, Vector<T> *dx, Vector<T> *y);
 		virtual void init(const DynamicalSystem<T> &ref);
 		virtual void init(const T xi[]);
 		virtual void init(const std::vector<T> &xi);
@@ -183,6 +191,14 @@ DynamicalSystem<T>::DynamicalSystem(Vector<T> &x, Vector<T> &dx)
 }
 
 template<typename T>
+DynamicalSystem<T>::DynamicalSystem(Vector<T> *x, Vector<T> *dx)
+{
+	this->init();
+	this->init(x,dx);
+	return;
+}
+
+template<typename T>
 DynamicalSystem<T>::DynamicalSystem(const size_type nstates, const size_type noutputs, const bool newvectors)
 {
 	this->init();
@@ -192,6 +208,14 @@ DynamicalSystem<T>::DynamicalSystem(const size_type nstates, const size_type nou
 
 template<typename T>
 DynamicalSystem<T>::DynamicalSystem(Vector<T> &x, Vector<T> &dx, Vector<T> &y)
+{
+	this->init();
+	this->init(x,dx,y);
+	return;
+}
+
+template<typename T>
+DynamicalSystem<T>::DynamicalSystem(Vector<T> *x, Vector<T> *dx, Vector<T> *y)
 {
 	this->init();
 	this->init(x,dx,y);
@@ -248,13 +272,27 @@ inline Vector<T>& DynamicalSystem<T>::gety(void)
 template<typename T>
 inline void DynamicalSystem<T>::setx(Vector<T> &x, bool force_self)
 {
-	this->mx = &x;
+	this->setx(&x,force_self);
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::setx(Vector<T> *x, bool force_self)
+{
+	this->mx = x;
 	this->self_mx = force_self;
 	return;
 }
 
 template<typename T>
 inline void DynamicalSystem<T>::setx(Vector<T> &x, Vector<T> &dx, bool force_self)
+{
+	this->setx(&x,&dx,force_self);
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::setx(Vector<T> *x, Vector<T> *dx, bool force_self)
 {
 	this->setx(x,force_self);
 	this->setdx(dx,force_self);
@@ -264,7 +302,14 @@ inline void DynamicalSystem<T>::setx(Vector<T> &x, Vector<T> &dx, bool force_sel
 template<typename T>
 inline void DynamicalSystem<T>::setdx(Vector<T> &dx, bool force_self)
 {
-	this->mdx = &dx;
+	this->setdx(&dx,force_self);
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::setdx(Vector<T> *dx, bool force_self)
+{
+	this->mdx = dx;
 	this->self_mdx = force_self;
 	return;
 }
@@ -272,7 +317,14 @@ inline void DynamicalSystem<T>::setdx(Vector<T> &dx, bool force_self)
 template<typename T>
 inline void DynamicalSystem<T>::sety(Vector<T> &y, bool force_self)
 {
-	this->my = &y;
+	this->sety(&y,force_self);
+	return;
+}
+
+template<typename T>
+inline void DynamicalSystem<T>::sety(Vector<T> *y, bool force_self)
+{
+	this->my = y;
 	this->self_my = force_self;
 	return;
 }
@@ -384,9 +436,16 @@ void DynamicalSystem<T>::init(const size_type nstates, const bool newvectors)
 }
 
 template<typename T>
-void DynamicalSystem<T>::init(Vector<T> &x, Vector<T> &dx)
+inline void DynamicalSystem<T>::init(Vector<T> &x, Vector<T> &dx)
 {
-	if (x.size() != dx.size())
+	this->init(&x,&dx);
+	return;
+}
+
+template<typename T>
+void DynamicalSystem<T>::init(Vector<T> *x, Vector<T> *dx)
+{
+	if (x->size() != dx->size())
 	{
 		// TODO : Raise error : the x and dx vectors must have the same size.
 		return;
@@ -417,7 +476,14 @@ void DynamicalSystem<T>::init(const size_type nstates, const size_type noutputs,
 }
 
 template<typename T>
-void DynamicalSystem<T>::init(Vector<T> &x, Vector<T> &dx, Vector<T> &y)
+inline void DynamicalSystem<T>::init(Vector<T> &x, Vector<T> &dx, Vector<T> &y)
+{
+	this->init(&x,&dx,&y);
+	return;
+}
+
+template<typename T>
+void DynamicalSystem<T>::init(Vector<T> *x, Vector<T> *dx, Vector<T> *y)
 {
 	this->init(x,dx);
 	this->sety(y);

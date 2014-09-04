@@ -136,7 +136,7 @@ void Network<T>::finish(void)
 template<typename T>
 void Network<T>::f(T t, Vector<T>& x)
 {
-	this->mx = &x;
+	this->mx = &x;	// TODO c'est faux ! Ça ne fait pas ce qui est voulu
 	
 	for(int i = 0; i < this->local_systems.size(); ++i)
 	{

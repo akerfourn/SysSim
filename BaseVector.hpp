@@ -53,6 +53,7 @@ class BaseVector: public Vector<T>
 		inline void init(void);
 		inline void init(const size_type size);
 		inline void init(std::vector<T> &data);
+		inline void init(std::vector<T> *data);
 		inline void init(BaseVector<T> &vector);
 		
 	public:
@@ -60,11 +61,13 @@ class BaseVector: public Vector<T>
 		BaseVector(void);
 		BaseVector(const size_type size);
 		BaseVector(std::vector<T> &data);
+		BaseVector(std::vector<T> *data);
 		BaseVector(BaseVector<T> &vector);
 		virtual ~BaseVector();
 		
 		virtual std::vector<T>& getData(void);
-		virtual void setData(std::vector<T> &data);
+		inline void setData(std::vector<T> &data);
+		virtual void setData(std::vector<T> *data);
 		
 		virtual void copy(BaseVector<T> &vector);
 		
@@ -103,18 +106,28 @@ template<typename T>
 inline void BaseVector<T>::init(const size_type size)
 {
 	this->data = new std::vector<T>(size);
+	return;
 }
 
 template<typename T>
 inline void BaseVector<T>::init(std::vector<T> &data)
 {
-	this->data = &data;
+	this->init(&data);
+	return;
+}
+
+template<typename T>
+inline void BaseVector<T>::init(std::vector<T> *data)
+{
+	this->data = *data;
+	return;
 }
 
 template<typename T>
 inline void BaseVector<T>::init(BaseVector<T> &vector)
 {
 	this->copy(vector);
+	return;
 }
 
 
@@ -134,6 +147,13 @@ BaseVector<T>::BaseVector(const size_type size)
 
 template<typename T>
 BaseVector<T>::BaseVector(std::vector<T> &data)
+{
+	this->init(data);
+	return;
+}
+
+template<typename T>
+BaseVector<T>::BaseVector(std::vector<T> *data)
 {
 	this->init(data);
 	return;
@@ -161,9 +181,16 @@ std::vector<T>& BaseVector<T>::getData(void)
 }
 
 template<typename T>
-void BaseVector<T>::setData(std::vector<T> &data)
+inline void BaseVector<T>::setData(std::vector<T> &data)
 {
-	this->data = &data;
+	this->setData(&data);
+	return;
+}
+
+template<typename T>
+void BaseVector<T>::setData(std::vector<T> *data)
+{
+	this->data = data;
 	return;
 }
 
