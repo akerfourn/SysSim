@@ -46,31 +46,88 @@
 template<typename T>
 class Network: public DynamicalSystem<T>
 {
+	public:
+		typedef typename DynamicalSystem<T>::size_type size_type;
+	
 	protected:
-		std::vector< LocalSystem<T>* > systems;
+		std::vector< LocalSystem<T>* > local_systems;
+		std::vector< DynamicalSystem<T>* > systems;
+		
+		Vector<T> *originalx;
 
 	public:
-		Network(void):DynamicalSystem<T>(0,0){};
+		Network(void):DynamicalSystem<T>(0,0,false){};
 		virtual ~Network(void){};
 
 		void add(LocalSystem<T>& system);
+		void add(DynamicalSystem<T> &system);
+		void finish(Vector<T> *x, Vector<T> *dx, Vector<T> *y);
+		void finish(void);
 
 		virtual void f(T t, Vector<T>& x);
 };
 
 template<typename T>
-inline void Network<T>::add(LocalSystem<T>& system)
+void Network<T>::add(LocalSystem<T>& system)
 {
-	long nstates = this->sizex();
-	long noutputs = this->sizey();
+	//long nstates = this->sizex();
+	//long noutputs = this->sizey();
 
-	system.init(*this,nstates, noutputs);
+	system.init(*this,this->nstates, this->noutputs);
 
+	this->local_systems.push_back(&system);
+	this->nstates += system.sizex();
+	this->noutputs += system.sizey();
+
+	//this->resize(nstates, noutputs);
+	return;
+}
+
+template<typename T>
+void Network<T>::add(DynamicalSystem<T> &system)
+{
+	if (system.dimStates() > (size_type)0)
+	{
+		SubVector<T> *p = new SubVector<T>(this->nstates, this->nstates+system.dimStates());
+		system.setx(*p,true);
+		p = new SubVector<T>(this->nstates,this->nstates+system.dimStates());
+		system.setdx(*p,true);
+		this->nstates += system.dimStates();
+	}
+	if (system.dimOutputs() > (size_type)0)
+	{
+		SubVector<T> *p = new SubVector<T>(this->noutputs,this->noutputs+system.dimOutputs());
+		system.sety(*p,true);
+		this->noutputs += system.dimOutputs();
+	}
 	this->systems.push_back(&system);
-	nstates += system.sizex();
-	noutputs += system.sizey();
+	return;
+}
 
-	this->resize(nstates, noutputs);
+template<typename T>
+void Network<T>::finish(Vector<T> *x, Vector<T> *dx, Vector<T> *y)
+{
+	// TODO call init
+	for (size_type i = (size_type)0; i < this->systems.size(); ++i)
+	{
+		if (this->systems[i]->dimStates() > (size_type)0)
+		{
+			((SubVector<T>*)(&this->systems[i]->getx()))->setVector(*x);
+			((SubVector<T>*)(&this->systems[i]->getdx()))->setVector(*dx);
+		}
+		if(this->systems[i]->dimOutputs() > (size_type)0)
+		{
+			((SubVector<T>*)(&this->systems[i]->gety()))->setVector(*y);
+		}
+	}
+}
+
+template<typename T>
+void Network<T>::finish(void)
+{
+	this->init(this->nstates, this->noutputs);
+	this->finish(this->mx,this->mdx,this->my);
+	this->originalx = this->mx;
 	return;
 }
 
@@ -79,12 +136,21 @@ inline void Network<T>::add(LocalSystem<T>& system)
 template<typename T>
 void Network<T>::f(T t, Vector<T>& x)
 {
+	this->mx = &x;
+	
+	for(int i = 0; i < this->local_systems.size(); ++i)
+	{
+		this->local_systems[i]->setcx(x);
+		this->local_systems[i]->localf(t);
+		this->local_systems[i]->unsetcx();
+	}
+	
 	for(int i = 0; i < this->systems.size(); ++i)
 	{
-		this->systems[i]->setcx(x);
-		this->systems[i]->localf(t);
-		this->systems[i]->unsetcx();
+		this->systems[i]->f(t);
 	}
+	
+	this->mx = this->originalx;
 	return;
 }
 
