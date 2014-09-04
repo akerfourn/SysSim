@@ -472,6 +472,7 @@ void DynamicalSystem<T>::init(const size_type nstates, const size_type noutputs,
 		this->my = new BaseVector<T>(noutputs);
 		this->self_my = true;
 	}
+	this->noutputs = noutputs;
 	return;
 }
 
